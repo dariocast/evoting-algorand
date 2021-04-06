@@ -1,4 +1,5 @@
 @startuml Voting process
+title Voting process
 start
 :opt-in for voting;
 :voting right acquisition;
