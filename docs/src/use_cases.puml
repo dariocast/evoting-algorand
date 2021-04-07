@@ -1,0 +1,33 @@
+@startuml Use Cases 
+title Use cases, focusing on algorand
+left to right direction
+actor Voter as V
+actor "Vote Stakeholder" as VS
+actor Ballot as B
+
+usecase "Registration" as UC1
+usecase "Authentication" as UC2
+usecase "ID publication" as UC9
+package "Algorand Blockchain" {
+    usecase "Opt in for asset" as UC3
+    usecase "Opt in for voting" as UC4
+    usecase "Send asset" as UC5
+    usecase "Cast vote" as UC6
+    usecase "App Creation" as UC7
+    usecase "Asset Creation" as UC8
+}
+B --> UC7
+B --> UC8
+B --> UC9
+
+V --> UC1
+V --> UC3
+V --> UC4
+V --> UC5
+V --> UC6
+
+VS --> UC2
+VS --> UC3
+VS --> UC5
+
+@enduml 
