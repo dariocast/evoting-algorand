@@ -20,13 +20,13 @@ B --> UC7
 B --> UC8
 B --> UC9
 
-V --> UC1
+V -> UC1
 V --> UC3
 V --> UC4
 V --> UC5
 V --> UC6
 
-VS --> UC2
+VS -> UC2
 VS --> UC3
 VS --> UC5
 
