@@ -1,0 +1,20 @@
+{
+  "macmini": {
+    "host": "192.168.1.99",
+    "port": 8888,
+    "token": "5d7b1576d3a5894252fc5a444a758b8e4427f6406d2c3fc6fbf32ba021cd6d35"
+  },
+  "raspi": {
+    "host": "192.168.1.111",
+    "port": 8888,
+    "token": "829446f8f7168d305dcdcd71c9e00e2bb624763df946ccf3ccdb5a0bea9084eb"
+  },
+  "accounts": [
+    {
+      "passphrase": "head exile credit private couch special spawn also merry grant faith parent blade measure rigid mixed waste notice dizzy concert hidden nephew change absent emotion"
+    },
+    {
+      "passphrase": "burger annual abstract dentist unable glad crash cannon wet long fringe cube dress devote hill ancient luggage apple unable van inspire lesson wine abstract timber"
+    }
+  ]
+}
