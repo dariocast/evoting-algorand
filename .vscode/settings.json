@@ -1,5 +1,7 @@
 {
     "plantuml.diagramsRoot": "docs/src",
     "plantuml.exportFormat": "png",
-    "plantuml.exportOutDir": "docs/out"
+    "plantuml.exportOutDir": "docs/out",
+    "python.pythonPath": "C:\\Users\\dar10\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
+    "python.analysis.extraPaths": ["scripts"]
 }
