@@ -4,7 +4,7 @@ from algosdk import account, mnemonic
 import time
 
 # Desired prefix for address.
-PREFIX = "DARIO"
+PREFIX = "TEST"
 
 # Variables containing Private Key and Address
 PRIVATE_KEY = ""
@@ -17,7 +17,10 @@ TIME_START = time.time()
 # Keep looping until desired address is found.
 while (not ADDRESS.startswith(PREFIX)):
     TIME_DIFF = time.time() - TIME_START
-    print(f" {ATTEMPT} ({ATTEMPT / TIME_DIFF:.2f}/sec) ", end="\r")
+    # print(f" {ATTEMPT} ({TIME_DIFF:.3f}/sec) ", end="\r")
+    if ATTEMPT > 0:
+        # Può causare eccezione per divisione x 0 per questo skippo il primo tentativo
+        print(f" {ATTEMPT} ({ATTEMPT / TIME_DIFF:.2f}/sec) ", end="\r")
     PRIVATE_KEY, ADDRESS = account.generate_account()
     ATTEMPT += 1
 
