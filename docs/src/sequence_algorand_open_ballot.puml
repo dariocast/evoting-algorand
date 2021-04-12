@@ -5,9 +5,10 @@ autonumber
 participant "Voter Account" as VA
 participant "Stakeholder Account" as SA
 participant "Algorand Node" as N
-participant "Stateful Smart Contract"  as  ASC
-participant "Algorand Blockchain" as B
-
+box On Chain
+    participant "Stateful Smart Contract"  as  ASC
+    participant "Algorand Blockchain" as B
+end box
 
 == Initialization ==
 SA -> N : Voting asset configuration

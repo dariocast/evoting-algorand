@@ -1,0 +1,78 @@
+@startuml Evoting General Sequence
+title Evoting General Sequence
+autonumber
+
+actor user
+box "App"
+participant algorandWallet as "Algorand\nWallet"
+participant dizmeWallet as "Dizme\nWallet"
+end box
+
+participant Org
+
+box "Collector"
+participant dizme as "Dizme"
+participant dizmeAlgorandWallet as "DizmeAlgorandWallet"
+
+participant Algorand
+end box
+
+== preliminar phase==
+dizmeWallet -> Org : identity proof
+Org --> dizmeWallet: L1
+
+== new voting Palese X==
+Org -> dizmeWallet: ballot for voting X\n{votingId, ballotId,startDate, endDate}
+note right
+ballotId unico per votazione
+end note
+
+== vote Palese==
+dizmeWallet -> dizme: proof(vote for A, ballot)
+
+dizmeAlgorandWallet -> Algorand: VoteA balloId
+note right
+1- User puo' verificare il voto registrato ==>
+Dizme non puo' levare voti
+2- Org verifica che solo chi ha un ballotId ha votato ==>
+Dizme non puo' inventare voti
+end note
+
+...
+
+== new voting Segreto X==
+dizmeAlgorandWallet -> Algorand: new asset VotingX
+
+== Vote Segreto==
+
+user-> dizmeWallet: I want to vote A for votingX
+dizmeWallet -> Org: proof(L1, voting X)
+Org -> dizmeWallet: ballot for voting X\n{votingId, ballotId, startDate, endDate}
+algorandWallet -> algorandWallet: new address
+
+
+dizmeWallet ->dizme : proof(ballot, address algorand)
+dizmeAlgorandWallet -> algorandWallet: assetX
+algorandWallet -> dizmeAlgorandWallet: assetX, inf:VotoA
+algorandWallet -> user: ok
+
+== new voting Palese X==
+dizmeAlgorandWallet -> Algorand: new asset VotingX
+
+== Vote Palese==
+
+user-> dizmeWallet: I want to vote A for votingX
+dizmeWallet -> Org: proof(L1, voting X)
+Org -> dizmeWallet: ballot for voting X\n{votingId, startDate, endDate}
+
+dizmeWallet ->dizme : proof(ballot,address)
+dizmeAlgorandWallet -> algorandWallet: assetX, info:ballotId
+algorandWallet -> dizmeAlgorandWallet: assetX, inf:VotoA
+algorandWallet -> Algorand: opt-out AssetX
+algorandWallet -> user: ok
+
+== Close==
+dizmeAlgorandWallet -> Algorand: revoke AssetX
+dizmeAlgorandWallet -> Algorand: close AssetX
+
+@enduml
