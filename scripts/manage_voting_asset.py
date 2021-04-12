@@ -2,26 +2,6 @@ from algosdk.future.transaction import AssetConfigTxn, AssetTransferTxn
 from algosdk import account, mnemonic
 import utils
 
-def account_selection(type='creator'):
-    # select creator address
-    accounts = {}
-    counter = 0
-    for m in utils.getPassphrases():
-        accounts[counter] = {}
-        accounts[counter]['pk'] = mnemonic.to_public_key(m)
-        accounts[counter]['sk'] = mnemonic.to_private_key(m)
-        counter += 1
-    print(f"you have {len(accounts)} account(s):")
-    for a in accounts:
-        print(f"{a} - {accounts[a]['pk']}")
-    account_selected = input(f"Which account do you want as {type}?: ")
-    try:
-        account_selected = int(account_selected)
-    except:
-        print(f"Entered value MUST be integer < {len(accounts)}!")
-    return accounts[account_selected]
-
-
 def create_asset():
     # choose amount
     number_of_units_to_generate = input("How many units do you want?: ")
@@ -32,7 +12,7 @@ def create_asset():
     except:
         print("Entered values MUST be integer>0!")
 
-    account_selected = account_selection('creator')
+    account_selected = utils.account_selection('creator')
 
     client = utils.getAlgodClient()
     params = client.suggested_params()
@@ -76,7 +56,7 @@ def create_asset():
 
 def opt_in_to_asset():
     client = utils.getAlgodClient()
-    account_selected = account_selection('interested-in')
+    account_selected = utils.account_selection('interested-in')
     asset_id = input("Type asset ID to opt-in: ")
     try:
         asset_id = int(asset_id)
@@ -115,8 +95,8 @@ def opt_in_to_asset():
 
 def opt_out_from_asset():
     client = utils.getAlgodClient()
-    account_selected = account_selection('interested-out')
-    receiver = account_selection('receiver')
+    account_selected = utils.account_selection('interested-out')
+    receiver = utils.account_selection('receiver')
     asset_id = input("Type asset ID to opt-out: ")
     try:
         asset_id = int(asset_id)
@@ -157,8 +137,8 @@ def opt_out_from_asset():
 
 
 def send_to():
-    sender = account_selection('sender')
-    receiver = account_selection('receiver')
+    sender = utils.account_selection('sender')
+    receiver = utils.account_selection('receiver')
     asset_id = input("Type asset ID to trade: ")
     amount = input("How many units do you want to transfer?: ")
     try:
@@ -188,7 +168,7 @@ def send_to():
 
 def destroy_all_units():
     # DESTROY ASSET
-    account_selected = account_selection("manager")
+    account_selected = utils.account_selection("manager")
     asset_id = input("Type asset ID to destroy: ")
     try:
         asset_id = int(asset_id)
@@ -226,7 +206,7 @@ def destroy_all_units():
 
 def check_holdings():
     client = utils.getAlgodClient()
-    account_selected = account_selection('to check')
+    account_selected = utils.account_selection('to check')
     asset_id = input("Type asset ID to check: ")
     try:
         asset_id = int(asset_id)

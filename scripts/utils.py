@@ -1,4 +1,5 @@
 from algosdk.v2client import algod
+from algosdk import account, mnemonic
 import json
 
 
@@ -11,6 +12,27 @@ def getAlgodClient() -> algod.AlgodClient:
         algod_address = 'http://' + data['macmini']['host'] + ':' + str(data['macmini']['port'])
         algod_token = data['macmini']['token']
         return algod.AlgodClient(algod_address=algod_address, algod_token=algod_token)
+
+
+def account_selection(type='creator'):
+    # select creator address
+    accounts = {}
+    counter = 0
+    for m in getPassphrases():
+        accounts[counter] = {}
+        accounts[counter]['pk'] = mnemonic.to_public_key(m)
+        accounts[counter]['sk'] = mnemonic.to_private_key(m)
+        counter += 1
+    print(f"you have {len(accounts)} account(s):")
+    for a in accounts:
+        print(f"{a} - {accounts[a]['pk']}")
+    account_selected = input(f"Which account do you want as {type}?: ")
+    try:
+        account_selected = int(account_selected)
+    except:
+        print(f"Entered value MUST be integer < {len(accounts)}!")
+    return accounts[account_selected]
+
 
 def getPassphrases():
     passphrases = []
