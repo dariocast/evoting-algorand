@@ -1,0 +1,23 @@
+@startuml Open Ballot
+title Open Ballot sequence
+autonumber
+
+participant Voter   as  V
+participant Stakeholder as  S
+participant Ballot  as  Ball
+participant Register as Reg
+
+== Registration period ==
+V -> S : Registration in voting
+S --> V : Right-to-vote
+== Voting period ==
+V -> Ball : want to vote
+Ball -> V : show Right-to-vote
+V --> Ball : Right-to-vote
+Ball --> V : ok
+V -> Ball : Cast vote
+Ball -> Reg : register vote preference for specific voter
+== End period ==
+S -> Reg : Retrieve info about votation
+Reg --> S : info 
+@enduml
