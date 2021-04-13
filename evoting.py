@@ -25,7 +25,6 @@ def create_app(algod_client, priv_key, preferences):
     clear_state_program_teal = compileTeal(clear_state_program_ast, mode=Mode.Application, version=2)
     clear_state_program_compiled = compile_program(algod_client, clear_state_program_teal)
 
-    # create unsigned transaction
     txn = transaction.ApplicationCreateTxn(
         sender,
         params,
@@ -40,10 +39,8 @@ def create_app(algod_client, priv_key, preferences):
     tx_id = signed_txn.transaction.get_txid()
     algod_client.send_transaction(signed_txn)
 
-    # await confirmation
     wait_for_confirmation(algod_client, tx_id)
 
-    # display results
     transaction_response = algod_client.pending_transaction_info(tx_id)
     app_id = transaction_response['application-index']
     print("Created new app-id:", app_id)
@@ -74,46 +71,6 @@ def main():
 
     # create new application
     app_id = create_app(algod_client, creator_private_key, preferences)
-
-    # # read global state of application
-    # print("Global state:", read_global_state(algod_client, account.address_from_private_key(creator_private_key), app_id))
-    #
-    # # wait for registration period to start
-    # wait_for_round(algod_client, regBegin)
-    #
-    # # opt-in to application
-    # opt_in_app(algod_client, user_private_key, app_id)
-    #
-    # wait_for_round(algod_client, voteBegin)
-    #
-    # # call application without arguments
-    # call_app(algod_client, user_private_key, app_id, [b'vote', b'choiceA'])
-    #
-    # # read local state of application from user account
-    # print("Local state:", read_local_state(algod_client, account.address_from_private_key(user_private_key), app_id))
-    #
-    # # wait for registration period to start
-    # wait_for_round(algod_client, voteEnd)
-    #
-    # # read global state of application
-    # global_state = read_global_state(algod_client, account.address_from_private_key(creator_private_key), app_id)
-    # print("Global state:", global_state)
-    #
-    # max_votes = 0
-    # max_votes_choice = None
-    # for key,value in global_state.items():
-    #     if key not in ('RegBegin', 'RegEnd', 'VoteBegin', 'VoteEnd', 'Creator') and isinstance(value, int):
-    #         if value > max_votes:
-    #             max_votes = value
-    #             max_votes_choice = key
-    #
-    # print("The winner is:", max_votes_choice)
-    #
-    # # delete application
-    # delete_app(algod_client, creator_private_key, app_id)
-    #
-    # # clear application from user account
-    # clear_app(algod_client, user_private_key, app_id)
 
 
 if __name__ == "__main__":
