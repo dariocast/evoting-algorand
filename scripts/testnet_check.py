@@ -1,4 +1,4 @@
-from config_utils import getAlgodClient, getPassphrases
+from scripts.utils import getAlgodClient, getPassphrases
 from algosdk import account, mnemonic
 import json
 
