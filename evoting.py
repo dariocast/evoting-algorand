@@ -16,6 +16,7 @@ def evoting_approval_program(preferences):
         Return(Int(1))
     ])
     is_creator = Txn.sender() == App.globalGet(Bytes("Creator"))
+    print(on_creation)
     pass
 
 def evoting_clear_program():
@@ -23,3 +24,9 @@ def evoting_clear_program():
 
 def vote():
     pass
+
+def main():
+    evoting_approval_program([b'Ciao'])
+
+if __name__ == 'main':
+    main()
