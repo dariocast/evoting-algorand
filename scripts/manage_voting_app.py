@@ -15,12 +15,12 @@ def app_creation():
     
     # Dichiaro parametri
     on_complete = transaction.OnComplete.NoOpOC.real
-    file = open('../utility/TEAL/voting_app.teal',mode='r')
+    file = open('../vote_approval.teal',mode='r')
     source_code = file.read()
     file.close()
     compile_response = client.compile(source_code.decode('utf-8'))
     approval_program = base64.b64decode(compile_response['result'])
-    file = open('../utility/TEAL/voting_app_clear.teal',mode='r')
+    file = open('../vote_clear_state.teal',mode='r')
     source_code = file.read()
     file.close()
     compile_response = client.compile(source_code.decode('utf-8'))
@@ -106,12 +106,12 @@ def app_delete():
 
 def main():
     options = {
-        0 : create_asset,
-        1 : opt_in_to_asset,
-        2 : opt_out_from_asset,
-        3 : send_to,
-        4 : destroy_all_units,
-        5 : check_holdings,
+        0 : app_creation,
+        1 : app_opt_in,
+        2 : app_opt_out,
+        3 : app_delete,
+        4 : app_vote,
+        5 : app_read_state,
     }
 
     cmd = input("type a command: ")

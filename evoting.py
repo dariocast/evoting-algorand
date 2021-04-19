@@ -2,11 +2,11 @@
 
 from algosdk import mnemonic, account
 from algosdk.future import transaction
-from algosdk.future.transaction import StateSchema
+from algosdk.future.transaction import ApplicationCallTxn, StateSchema
 from pyteal import compileTeal, Mode
 
 from evoting_asc import voting_clear_program, voting_approval_program
-from evoting_utils import compile_program, wait_for_confirmation, get_private_key_from_mnemonic
+from evoting_utils import compile_program, wait_for_confirmation
 
 
 # On creation, minimum balance increase:
@@ -25,16 +25,28 @@ def create_app(algod_client, priv_key, preferences):
     clear_state_program_teal = compileTeal(clear_state_program_ast, mode=Mode.Application, version=2)
     clear_state_program_compiled = compile_program(algod_client, clear_state_program_teal)
 
+    # txn = ApplicationCallTxn(
+    #     index=0,
+    #     sender=sender,
+    #     sp=params,
+    #     on_complete=on_complete,
+    #     approval_program=approval_program_compiled,
+    #     clear_program=clear_state_program_compiled,
+    #     app_args=preferences
+    # )
+
+    # create unsigned transaction
     txn = transaction.ApplicationCreateTxn(
-        sender,
+        sender, 
         params,
         on_complete,
         approval_program_compiled,
         clear_state_program_compiled,
         global_schema,
-        local_schema,
-        app_args=preferences
+        local_schema
     )
+
+
     signed_txn = txn.sign(priv_key)
     tx_id = signed_txn.transaction.get_txid()
     algod_client.send_transaction(signed_txn)
@@ -58,11 +70,8 @@ def main():
     algod_client = getAlgodClient()
     creator = account_selection('creator')
     creator_private_key = creator['sk']
-    # voter = account_selection('voter')
-    # user_private_key = voter['sk']
-    # creator_private_key = get_private_key_from_mnemonic(creator_mnemonic)
 
-# create list of bytes for app args
+    # create list of bytes for app args
     preferences = [
         'Preferenza1',
         'Preferenza2',
