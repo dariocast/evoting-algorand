@@ -13,7 +13,6 @@ private_key1 = mnemonic.to_private_key(passphrases[0])
 private_key2 = mnemonic.to_private_key(passphrases[1])
 private_key3 = mnemonic.to_private_key(passphrases[2])
 private_key4 = mnemonic.to_private_key(passphrases[3])
-
 my_address1 = mnemonic.to_public_key(passphrases[0])
 my_address2 = mnemonic.to_public_key(passphrases[1])
 my_address3 = mnemonic.to_public_key(passphrases[2])

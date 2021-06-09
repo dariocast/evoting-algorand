@@ -9,6 +9,12 @@
     "port": 8888,
     "token": "829446f8f7168d305dcdcd71c9e00e2bb624763df946ccf3ccdb5a0bea9084eb"
   },
+  "purestake": {
+    "host": "192.168.1.111",
+    "port": 8888,
+    "apiKey": "6ouFHKmlgF57UkOUz9eDZ1XTN7iZU9Fo2LxhxhBX",
+    "token": "829446f8f7168d305dcdcd71c9e00e2bb624763df946ccf3ccdb5a0bea9084eb"
+  },
   "accounts": [
     {
       "address": "J5U43DARX2VEESZJQEVRL6L5JGC2YKLALSWHPWL2GUTXGW3KHL5I7BO7C4",
