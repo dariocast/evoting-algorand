@@ -9,9 +9,12 @@ def getAlgodClient() -> algod.AlgodClient:
     file = os.path.join(THIS_FOLDER, 'config.json')
     with open(file, "r") as config_file:
         data = json.load(config_file)
-        algod_address = 'http://' + data['macmini']['host'] + ':' + str(data['macmini']['port'])
-        algod_token = data['macmini']['token']
-        return algod.AlgodClient(algod_address=algod_address, algod_token=algod_token)
+        algod_address = data['purestake']['host']
+        algod_token = data['purestake']['token']
+        headers = {
+            "X-API-Key": algod_token,
+        }
+        return algod.AlgodClient(algod_token, algod_address, headers)
 
 
 def account_selection(type='creator'):

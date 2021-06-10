@@ -1,19 +1,18 @@
 {
   "macmini": {
-    "host": "192.168.1.99",
+    "host": "http://192.168.1.99",
     "port": 8888,
     "token": "5d7b1576d3a5894252fc5a444a758b8e4427f6406d2c3fc6fbf32ba021cd6d35"
   },
   "raspi": {
-    "host": "192.168.1.111",
+    "host": "http://192.168.1.111",
     "port": 8888,
     "token": "829446f8f7168d305dcdcd71c9e00e2bb624763df946ccf3ccdb5a0bea9084eb"
   },
   "purestake": {
-    "host": "192.168.1.111",
-    "port": 8888,
-    "apiKey": "6ouFHKmlgF57UkOUz9eDZ1XTN7iZU9Fo2LxhxhBX",
-    "token": "829446f8f7168d305dcdcd71c9e00e2bb624763df946ccf3ccdb5a0bea9084eb"
+    "host": "https://testnet-algorand.api.purestake.io/ps2",
+    "port": null,
+    "token": "6ouFHKmlgF57UkOUz9eDZ1XTN7iZU9Fo2LxhxhBX"
   },
   "accounts": [
     {

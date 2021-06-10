@@ -1,6 +1,7 @@
 import base64
+from posixpath import dirname
 from algosdk.future import transaction
-from algosdk.future.transaction import ApplicationCallTxn, StateSchema
+from algosdk.future.transaction import ApplicationCallTxn, ApplicationCreateTxn, StateSchema
 import utils
 
 
@@ -12,36 +13,60 @@ def app_creation():
     creator = utils.account_selection('creator')
     client = utils.getAlgodClient()
     params = client.suggested_params()
-    
+    preferences = input(f"Enter the options:")
+    preferences = preferences.split(' ')
+    assert len(preferences) >= 2
+    assetID = input(f"Enter asset ID: ")
+
+    firstOptionTemplate = "txna ApplicationArgs 1\nbyte \"OPTION\"\n==\n"
+    optionTextTemplate = "txna ApplicationArgs 1\nbyte \"OPTION\"\n==\n||\n";
+
+    options = firstOptionTemplate.replace("OPTION", preferences[0])
+    for preference in preferences:
+        if preference == preferences[0]:
+            continue
+        option = optionTextTemplate.replace("OPTION", preference)
+        options = options+option
+
     # Dichiaro parametri
     on_complete = transaction.OnComplete.NoOpOC.real
-    file = open('../vote_approval.teal',mode='r')
+    file = open(dirname(__file__)+'/utility/TEAL/flutterapp_vote_approval.teal',mode='rb')
     source_code = file.read()
     file.close()
-    compile_response = client.compile(source_code.decode('utf-8'))
+    source_code = source_code.decode("utf-8")
+    source_code = source_code.replace("ASSET_ID", assetID)
+    source_code = source_code.replace("OPTIONS_PLACEHOLDER", options)
+    compile_response = client.compile(source_code)
     approval_program = base64.b64decode(compile_response['result'])
-    file = open('../vote_clear_state.teal',mode='r')
+    file = open(dirname(__file__)+'/utility/TEAL/flutterapp_vote_clear_state.teal',mode='rb')
     source_code = file.read()
     file.close()
-    compile_response = client.compile(source_code.decode('utf-8'))
+    compile_response = client.compile(source_code.decode("utf-8"))
     clear_state_program = base64.b64decode(compile_response['result'])
     
     # schemi per i dati globali e locali
     global_schema = StateSchema(num_uints=6, num_byte_slices=1)
     local_schema = StateSchema(num_uints=0, num_byte_slices=1)
-
     # args per le variabili globali
     app_args = [
-        "int:1".encode("utf-8"),
-        "int:20".encode("utf-8"),
-        "int:20".encode("utf-8"),
-        "int:100".encode("utf-8"),
+        "14696170".encode("utf-8"),
+        "14740000".encode("utf-8"),
+        "14740000".encode("utf-8"),
+        "14896170".encode("utf-8"),
+    ]
+    app_args_forse_buone = [
+        (14696170).to_bytes(length=4, byteorder='big'),
+        (14740000).to_bytes(length=4, byteorder='big'),
+        (14740000).to_bytes(length=4, byteorder='big'),
+        (14896170).to_bytes(length=4, byteorder='big'),
     ]
 
-    txn = ApplicationCallTxn(
+    txn = ApplicationCreateTxn(
         sender=creator['pk'],
         sp=params,
         on_complete=on_complete,
+        global_schema=global_schema,
+        local_schema=local_schema,
         approval_program=approval_program,
         clear_program=clear_state_program,
         app_args=app_args
@@ -75,7 +100,7 @@ def app_read_state():
 
 def app_delete():
     manager = utils.account_selection('manager')
-    app_id = input("Type asset ID to destroy: ")
+    app_id = input("Type app ID to destroy: ")
     try:
         app_id = int(app_id)
     except:
