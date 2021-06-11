@@ -130,8 +130,8 @@ gtxn 1 AssetReceiver
 bz failed
 // verify the proper token is being spent
 gtxn 1 XferAsset
-// hard coded and should be changed
-int 2
+// placeholder assetid
+int ASSET_ID
 ==
 bz failed
 // spent 1 vote token

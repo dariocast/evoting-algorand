@@ -6,7 +6,36 @@ import utils
 
 
 def app_opt_in():
-    pass
+    # declare sender
+    sender_account = utils.account_selection('sender')
+    sender = sender_account['pk']
+    index = input(f"Enter app ID: ")
+
+    print("OptIn from account: ",sender)
+    client = utils.getAlgodClient()
+
+	# get node suggested parameters
+    params = client.suggested_params()
+    # comment out the next two (2) lines to use suggested fees
+    params.flat_fee = True
+    params.fee = 1000
+
+    # create unsigned transaction
+    txn = transaction.ApplicationOptInTxn(sender, params, index)
+
+    # sign transaction
+    signed_txn = txn.sign(sender_account['sk'])
+    tx_id = signed_txn.transaction.get_txid()
+
+    # send transaction
+    client.send_transactions([signed_txn])
+
+    # await confirmation
+    utils.wait_for_confirmation(client, tx_id)
+
+    # display results
+    transaction_response = client.pending_transaction_info(tx_id)
+    print("OptIn to app-id:", transaction_response['txn']['txn']['apid'])
 
 
 def app_creation():
@@ -89,19 +118,20 @@ def app_creation():
     print("Voting app created with ID: ",app_id)    
 
 def app_vote():
+    voter = utils.account_selection('voter')
     creator = utils.account_selection('creator')
     client = utils.getAlgodClient()
     params = client.suggested_params()
     appID = input(f"Enter app ID: ")
     assetID = input(f"Enter asset ID: ")
     appcall_txn = ApplicationNoOpTxn(
-        sender=creator['pk'],
+        sender=voter['pk'],
         sp=params,
         index=appID,
         app_args=[b'vote', b'pref2']
     )
     axfer_txn = AssetTransferTxn(
-        sender=creator['pk'],
+        sender=voter['pk'],
         sp=params,
         receiver=creator['pk'],
         amt=1,
@@ -112,8 +142,8 @@ def app_vote():
     appcall_txn.group = gid
     axfer_txn.group = gid
     # sign transactions
-    signed_txn_appcall = appcall_txn.sign(creator['sk'])
-    signed_txn_axfer = axfer_txn.sign(creator['sk'])
+    signed_txn_appcall = appcall_txn.sign(voter['sk'])
+    signed_txn_axfer = axfer_txn.sign(voter['sk'])
     # combine
     signed_group = [signed_txn_appcall, signed_txn_axfer]
 
