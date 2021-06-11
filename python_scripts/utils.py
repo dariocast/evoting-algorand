@@ -103,3 +103,7 @@ def print_asset_holding(algodclient, account, assetid):
             print("Asset ID: {}".format(scrutinized_asset['asset-id']))
             print(json.dumps(scrutinized_asset, indent=4))
             break
+
+
+def intToBytes(i):
+    return i.to_bytes(8, "big")

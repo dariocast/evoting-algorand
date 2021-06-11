@@ -1,7 +1,7 @@
 import base64
 from posixpath import dirname
 from algosdk.future import transaction
-from algosdk.future.transaction import ApplicationCallTxn, ApplicationCreateTxn, StateSchema
+from algosdk.future.transaction import ApplicationCallTxn, ApplicationCreateTxn, ApplicationNoOpTxn, AssetTransferTxn, StateSchema, Transaction, assign_group_id
 import utils
 
 
@@ -47,18 +47,20 @@ def app_creation():
     # schemi per i dati globali e locali
     global_schema = StateSchema(num_uints=6, num_byte_slices=1)
     local_schema = StateSchema(num_uints=0, num_byte_slices=1)
-    # args per le variabili globali
+
+    # configure registration and voting period
+    status = client.status()
+    regBegin = status['last-round'] + 10
+    regEnd = regBegin + 10
+    voteBegin = regEnd + 1
+    voteEnd = voteBegin + 10
+
+    # create list of bytes for app args
     app_args = [
-        "14696170".encode("utf-8"),
-        "14740000".encode("utf-8"),
-        "14740000".encode("utf-8"),
-        "14896170".encode("utf-8"),
-    ]
-    app_args_forse_buone = [
-        (14696170).to_bytes(length=4, byteorder='big'),
-        (14740000).to_bytes(length=4, byteorder='big'),
-        (14740000).to_bytes(length=4, byteorder='big'),
-        (14896170).to_bytes(length=4, byteorder='big'),
+        utils.intToBytes(regBegin),
+        utils.intToBytes(regEnd),
+        utils.intToBytes(voteBegin),
+        utils.intToBytes(voteEnd)
     ]
 
     txn = ApplicationCreateTxn(
@@ -87,7 +89,44 @@ def app_creation():
     print("Voting app created with ID: ",app_id)    
 
 def app_vote():
-    pass
+    creator = utils.account_selection('creator')
+    client = utils.getAlgodClient()
+    params = client.suggested_params()
+    appID = input(f"Enter app ID: ")
+    assetID = input(f"Enter asset ID: ")
+    appcall_txn = ApplicationNoOpTxn(
+        sender=creator['pk'],
+        sp=params,
+        index=appID,
+        app_args=[b'vote', b'pref2']
+    )
+    axfer_txn = AssetTransferTxn(
+        sender=creator['pk'],
+        sp=params,
+        receiver=creator['pk'],
+        amt=1,
+        index=assetID,
+    )
+    # assign group id
+    gid = transaction.calculate_group_id([appcall_txn, axfer_txn])
+    appcall_txn.group = gid
+    axfer_txn.group = gid
+    # sign transactions
+    signed_txn_appcall = appcall_txn.sign(creator['sk'])
+    signed_txn_axfer = axfer_txn.sign(creator['sk'])
+    # combine
+    signed_group = [signed_txn_appcall, signed_txn_axfer]
+
+    # send transaction
+    tx_id = client.send_transactions(signed_group)
+
+    # await confirmation
+    utils.wait_for_confirmation(client, tx_id)
+
+    # display results
+    transaction_response = client.pending_transaction_info(tx_id)
+    print("Vote expressed correctly",)    
+
 
 
 def app_opt_out():
