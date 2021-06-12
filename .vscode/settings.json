@@ -2,5 +2,5 @@
     "plantuml.diagramsRoot": "docs/src",
     "plantuml.exportFormat": "png",
     "plantuml.exportOutDir": "docs/out",
-    "python.analysis.extraPaths": ["scripts"]
+    "python.analysis.extraPaths": ["python_scripts"]
 }
