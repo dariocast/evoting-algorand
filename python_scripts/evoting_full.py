@@ -1,6 +1,7 @@
 import base64
 import datetime
 from posixpath import dirname
+import os
 
 from algosdk.future import transaction
 from algosdk import account, mnemonic
@@ -336,7 +337,7 @@ def main():
         option = optionTextTemplate.replace("OPTION", preference)
         options = options+option
 
-    file = open(dirname(__file__)+'/utility/TEAL/flutterapp_vote_approval.teal',mode='rb')
+    file = open(os.path.dirname(__file__)+'/utility/TEAL/flutterapp_vote_approval.teal',mode='rb')
     source_code = file.read()
     file.close()
     source_code = source_code.decode("utf-8")
@@ -344,7 +345,7 @@ def main():
     source_code = source_code.replace("OPTIONS_PLACEHOLDER", options)
     compile_response = algod_client.compile(source_code)
     approval_program = base64.b64decode(compile_response['result'])
-    file = open(dirname(__file__)+'/utility/TEAL/flutterapp_vote_clear_state.teal',mode='rb')
+    file = open(os.path.dirname(__file__)+'/utility/TEAL/flutterapp_vote_clear_state.teal',mode='rb')
     source_code = file.read()
     file.close()
     compile_response = algod_client.compile(source_code.decode("utf-8"))
