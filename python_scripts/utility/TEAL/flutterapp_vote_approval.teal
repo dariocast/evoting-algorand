@@ -173,10 +173,11 @@ store 1
 txna ApplicationArgs 1
 load 1
 app_global_put
-// store the voters choice in local state
+// store that user voted in local storage
 int 0 //sender
 byte "voted"
-txna ApplicationArgs 1
+// byte "already voted"
+int 1
 app_local_put
 int 1
 return

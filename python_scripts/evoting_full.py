@@ -306,8 +306,8 @@ def main():
     user_private_key = get_private_key_from_mnemonic(user_mnemonic)
 
     # declare application state storage (immutable)
-    local_ints = 0
-    local_bytes = 1
+    local_ints = 1
+    local_bytes = 0
     global_ints = 10 # 4 for setup + 6 for choices. Use a larger number for more choices.
     global_bytes = 1
     global_schema = transaction.StateSchema(global_ints, global_bytes)
