@@ -1,5 +1,6 @@
 import base64
 import datetime
+import json
 from posixpath import dirname
 import os
 
@@ -56,7 +57,7 @@ def wait_for_round(client, round):
         print(f"Round {last_round}")
 
 # create new application
-def create_app(client, private_key, approval_program, clear_program, global_schema, local_schema, app_args):
+def create_app(client, private_key, approval_program, clear_program, global_schema, local_schema, app_args, note):
     # define sender as creator
     sender = account.address_from_private_key(private_key)
 
@@ -72,7 +73,8 @@ def create_app(client, private_key, approval_program, clear_program, global_sche
     # create unsigned transaction
     txn = transaction.ApplicationCreateTxn(sender, params, on_complete, \
                                             approval_program, clear_program, \
-                                            global_schema, local_schema, app_args)
+                                            global_schema, local_schema, app_args,
+                                            note=note)
 
     # sign transaction
     signed_txn = txn.sign(private_key)
@@ -369,9 +371,11 @@ def main():
         intToBytes(voteEnd)
     ]
 
+    data_set = {"options": preferences, "title":"TITOLO VOTAZIONE", "description":"DESCRIZIONE VOTAZIONE"}
+    json_dump = json.dumps(data_set)
+    note = f"[voteapp][creation]{json_dump}".encode()
     # create new application
-    app_id = create_app(algod_client, creator_private_key, approval_program, clear_state_program, global_schema, local_schema, app_args)
-
+    app_id = create_app(algod_client, creator_private_key, approval_program, clear_state_program, global_schema, local_schema, app_args, note)
     # read global state of application
     print("Global state:", read_global_state(algod_client, account.address_from_private_key(creator_private_key), app_id))
 
