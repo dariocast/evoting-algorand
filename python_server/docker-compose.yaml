@@ -1,0 +1,17 @@
+version: '3.1'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+
+  voting-server:
+    image: voting-server
+    build: .
+    restart: always
+    environment:
+      - LOGGER=DEBUG  
+    ports:
+      - 8090:5000
