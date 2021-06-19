@@ -393,7 +393,7 @@ def main():
         private_key=user_private_key, 
         creator_address=creator_address, 
         index=app_id, 
-        app_args=[b'vote', b'choiceA']
+        app_args=[b'vote', preferences[0].encode()]
         )
 
     # read local state of application from user account

@@ -7,7 +7,7 @@ import os
 
 from algosdk.future import transaction
 from algosdk import account
-from algosdk.v2client import algod
+from algosdk.v2client import algod, indexer
 
 from algorand import evoting_utils
 
@@ -15,8 +15,18 @@ from algorand import evoting_utils
 algod_address = "https://testnet-algorand.api.purestake.io/ps2"
 algod_token = "6ouFHKmlgF57UkOUz9eDZ1XTN7iZU9Fo2LxhxhBX"
 
+indexer_address = "https://testnet-algorand.api.purestake.io/idx2"
+
+# initialize and return a valid indexerClient
+def get_indexer() -> indexer.IndexerClient:
+    headers = {
+            "X-API-Key": algod_token,
+        }
+    indexer_client = indexer.IndexerClient("", indexer_address, headers)
+    return indexer_client
+
 # initialize and return a valid algodClient
-def get_client():
+def get_client() -> algod.AlgodClient:
     headers = {
             "X-API-Key": algod_token,
         }
@@ -137,7 +147,7 @@ def call_app(client: algod.AlgodClient, private_key, creator_address, index,  ap
     signed_group = [signed_txn_appcall, signed_txn_axfer]
 
     # send transaction
-    print("Sending transaction group...")
+    log.debug("Sending transaction group...")
     tx_id = client.send_transactions(signed_group)
 
     # await confirmation
@@ -250,135 +260,4 @@ def clear_app(client, private_key, index):
 
     # display results
     transaction_response = client.pending_transaction_info(tx_id)
-    log.debug(f"Cleared app-id: {transaction_response['txn']['txn']['apid']}")    
-
-def main():
-    # initialize an algodClient
-    headers = {
-            "X-API-Key": algod_token,
-        }
-    algod_client = algod.AlgodClient(algod_token, algod_address, headers)
-
-
-    # define private keys
-    creator_private_key = evoting_utils.get_private_key_from_mnemonic(creator_mnemonic)
-    creator_address = evoting_utils.get_address_from_mnemonic(creator_mnemonic)
-    user_private_key = evoting_utils.get_private_key_from_mnemonic(user_mnemonic)
-
-    # declare application state storage (immutable)
-    local_ints = 1
-    local_bytes = 0
-    global_ints = 10 # 4 for setup + 6 for choices. Use a larger number for more choices.
-    global_bytes = 1
-    global_schema = transaction.StateSchema(global_ints, global_bytes)
-    local_schema = transaction.StateSchema(local_ints, local_bytes)
-
-    # # get PyTeal approval program
-    # approval_program_ast = approval_program()
-    # # compile program to TEAL assembly
-    # approval_program_teal = compileTeal(approval_program_ast, mode=Mode.Application, version=2)
-    # # compile program to binary
-    # approval_program_compiled = compile_program(algod_client, approval_program_teal)
-
-    # # get PyTeal clear state program
-    # clear_state_program_ast = clear_state_program()
-    # # compile program to TEAL assembly
-    # clear_state_program_teal = compileTeal(clear_state_program_ast, mode=Mode.Application, version=2)
-    # # compile program to binary
-    # clear_state_program_compiled = compile_program(algod_client, clear_state_program_teal)
-
-    firstOptionTemplate = "txna ApplicationArgs 1\nbyte \"OPTION\"\n==\n"
-    optionTextTemplate = "txna ApplicationArgs 1\nbyte \"OPTION\"\n==\n||\n";
-
-    options = firstOptionTemplate.replace("OPTION", preferences[0])
-    for preference in preferences:
-        if preference == preferences[0]:
-            continue
-        option = optionTextTemplate.replace("OPTION", preference)
-        options = options+option
-
-    file = open(os.path.dirname(__file__)+'/utility/TEAL/flutterapp_vote_approval.teal',mode='rb')
-    source_code = file.read()
-    file.close()
-    source_code = source_code.decode("utf-8")
-    source_code = source_code.replace("ASSET_ID", str(assetID))
-    source_code = source_code.replace("OPTIONS_PLACEHOLDER", options)
-    compile_response = algod_client.compile(source_code)
-    approval_program = base64.b64decode(compile_response['result'])
-    file = open(os.path.dirname(__file__)+'/utility/TEAL/flutterapp_vote_clear_state.teal',mode='rb')
-    source_code = file.read()
-    file.close()
-    compile_response = algod_client.compile(source_code.decode("utf-8"))
-    clear_state_program = base64.b64decode(compile_response['result'])
-
-    # configure registration and voting period
-    status = algod_client.status()
-    regBegin = status['last-round'] + 1
-    regEnd = regBegin + 5
-    voteBegin = regEnd + 1
-    voteEnd = voteBegin + 5
-
-    print(f"Registration rounds: {regBegin} to {regEnd}")
-    print(f"Vote rounds: {voteBegin} to {voteEnd}")
-
-    # create list of bytes for app args
-    app_args = [
-        evoting_utils.intToBytes(regBegin),
-        evoting_utils.intToBytes(regEnd),
-        evoting_utils.intToBytes(voteBegin),
-        evoting_utils.intToBytes(voteEnd)
-    ]
-
-    data_set = {"options": preferences, "title":"TITOLO VOTAZIONE", "description":"DESCRIZIONE VOTAZIONE"}
-    json_dump = json.dumps(data_set)
-    note = f"[voteapp][creation]{json_dump}".encode()
-    # create new application
-    app_id = create_app(algod_client, creator_private_key, approval_program, clear_state_program, global_schema, local_schema, app_args, note)
-    # read global state of application
-    print("Global state:", read_global_state(algod_client, account.address_from_private_key(creator_private_key), app_id))
-
-    # wait for registration period to start
-    evoting_utils.wait_for_round(algod_client, regBegin)
-
-    # opt-in to application
-    opt_in_app(algod_client, user_private_key, app_id)
-
-    evoting_utils.wait_for_round(algod_client, voteBegin)
-
-    # call application without arguments
-    call_app(
-        client=algod_client,
-        private_key=user_private_key, 
-        creator_address=creator_address, 
-        index=app_id, 
-        app_args=[b'vote', b'choiceA']
-        )
-
-    # read local state of application from user account
-    print("Local state:", read_local_state(algod_client, account.address_from_private_key(user_private_key), app_id))
-
-    # wait for registration period to start
-    evoting_utils.wait_for_round(algod_client, voteEnd)
-
-    # read global state of application
-    global_state = read_global_state(algod_client, account.address_from_private_key(creator_private_key), app_id)
-    print("Global state:", global_state)
-
-    max_votes = 0
-    max_votes_choice = None
-    for key,value in global_state.items():
-        if key not in ('RegBegin', 'RegEnd', 'VoteBegin', 'VoteEnd', 'Creator') and isinstance(value, int):
-            if value > max_votes:
-                max_votes = value
-                max_votes_choice = key
-    
-    print("The winner is:", max_votes_choice)
-
-    # delete application
-    delete_app(algod_client, creator_private_key, app_id)
-
-    # clear application from user account
-    clear_app(algod_client, user_private_key, app_id)
-
-if __name__ == "__main__":
-    main()
+    log.debug(f"Cleared app-id: {transaction_response['txn']['txn']['apid']}")
