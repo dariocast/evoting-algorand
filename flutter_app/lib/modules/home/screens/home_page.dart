@@ -1,8 +1,7 @@
 import 'package:algorand_evoting/utils/services/algorand_service.dart';
-import 'package:algorand_evoting/wallet/wallet.dart';
+import 'package:algorand_evoting/modules/modules.dart';
 
-import '../../account/bloc/account_bloc.dart';
-import '../../config/themes/themes.dart';
+import 'package:algorand_evoting/config/themes/themes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {

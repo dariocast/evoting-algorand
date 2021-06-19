@@ -13,6 +13,7 @@ void main() async {
   await Hive.openBox<AccountEntity>('accounts');
 
   // Register the account repository
+  final AccountRepository accountRepository = AccountRepository();
   await accountRepository.init();
 
   runApp(App(accountRepository: accountRepository));

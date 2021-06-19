@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:algorand_dart/algorand_dart.dart';
-import '../../core/account_repository/account_repository.dart';
+import 'package:algorand_evoting/core/account_repository/account_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 

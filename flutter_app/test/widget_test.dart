@@ -6,7 +6,7 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:algorand_evoting/app.dart';
-import 'package:algorand_evoting/utils/services/account_service.dart';
+import 'package:algorand_evoting/core/account_repository/account_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -15,7 +15,7 @@ import 'package:algorand_evoting/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(App(accountRepository: accountRepository));
+    await tester.pumpWidget(App(accountRepository: AccountRepository()));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

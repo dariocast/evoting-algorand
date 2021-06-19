@@ -1,44 +1,27 @@
-import '../../account/account.dart';
-import '../../config/themes/themes.dart';
-import '../../constants/app_constants.dart';
-import '../../core/account_repository/account_repository.dart';
+import 'package:algorand_evoting/config/themes/themes.dart';
+import 'package:algorand_evoting/constants/app_constants.dart';
+import 'package:algorand_evoting/core/account_repository/account_repository.dart';
+import 'package:algorand_evoting/widgets/widgets.dart';
+
 import '../wallet.dart';
-import '../../widgets/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
 class WalletPage extends StatelessWidget {
   static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => WalletPage());
+    return MaterialPageRoute<void>(
+      builder: (context) => BlocProvider(
+        create: (_) => WalletBloc(
+          accountRepository: RepositoryProvider.of<AccountRepository>(context),
+        ),
+        child: WalletPage(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 30),
-        child: BlocProvider(
-          create: (context) {
-            return WalletBloc(
-              accountRepository:
-                  RepositoryProvider.of<AccountRepository>(context),
-            );
-          },
-          child: WalletView(),
-        ),
-      ),
-    );
-  }
-}
-
-class WalletView extends StatelessWidget {
-  const WalletView({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
+        body: Padding(
       padding: EdgeInsets.all(paddingSizeDefault),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,6 +61,6 @@ class WalletView extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }
