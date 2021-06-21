@@ -182,7 +182,7 @@ def prettify_voting_info(voting: Voting, indexer):
     voting_json_prettified['regBegin'] = str(voting.start_subscription_time)
     voting_json_prettified['regEnd'] = str(voting.end_subscription_time)
     voting_json_prettified['voteBegin'] = str(voting.start_voting_time)
-    voting_json_prettified['voteBegin'] = str(voting.end_voting_time)
+    voting_json_prettified['voteEnd'] = str(voting.end_voting_time)
     voting_json_prettified['creator'] = voting.creator
     voting_json_prettified['title'] = voting.title
     voting_json_prettified['options'] = voting.options
