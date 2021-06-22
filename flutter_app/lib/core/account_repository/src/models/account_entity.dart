@@ -14,16 +14,11 @@ class AccountEntity {
   @HiveField(1)
   late Uint8List privateKey;
 
-  @HiveField(2)
-  late String passphrase;
-
   AccountEntity();
 
-  AccountEntity.account(
-      Account account, Uint8List privateKey, String passphrase) {
+  AccountEntity.account(Account account, Uint8List privateKey) {
     this.publicAddress = account.publicAddress;
     this.privateKey = privateKey;
-    this.passphrase = passphrase;
   }
 
   Future<Account> unwrap() async {

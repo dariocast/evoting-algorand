@@ -11,18 +11,6 @@ part 'wallet_state.dart';
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final AccountRepository accountRepository;
 
-  void start() {
-    add(WalletStarted());
-  }
-
-  void createWallet() {
-    add(WalletCreateStarted());
-  }
-
-  void importWallet(String passphrase) {
-    add(WalletImportStarted(passphrase: passphrase));
-  }
-
   WalletBloc({required this.accountRepository}) : super(WalletInitial());
 
   @override
@@ -30,13 +18,22 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     WalletEvent event,
   ) async* {
     if (event is WalletCreateStarted) {
-      final account = await accountRepository.createAccount();
-      yield WalletCreateSuccess(account: account);
+      try {
+        final account = await accountRepository.createAccount();
+        yield WalletCreateSuccess(account: account);
+      } catch (AlgorandException) {
+        yield WalletFailure(message: 'Unable to create account');
+      }
     } else if (event is WalletImportStarted) {
       final words = event.passphrase.trim().split(' ');
-      final account = await accountRepository.importAccount(words);
 
-      yield WalletRestoreSuccess(account: account);
+      try {
+        final account = await accountRepository.importAccount(words);
+        yield WalletRestoreSuccess(account: account);
+      } catch (AlgorandException) {
+        yield WalletFailure(message: 'Unable to recover account');
+      }
     }
+    yield WalletInitial();
   }
 }

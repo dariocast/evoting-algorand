@@ -7,6 +7,12 @@ abstract class WalletState extends Equatable {
 
 class WalletInitial extends WalletState {}
 
+class WalletFailure extends WalletState {
+  final String message;
+
+  WalletFailure({required this.message});
+}
+
 class WalletCreateSuccess extends WalletState {
   final Account account;
 

@@ -1,16 +1,29 @@
 part of 'home_bloc.dart';
 
-abstract class HomeState extends Equatable {
-  const HomeState();
+class HomeState extends Equatable {
+  final String passphrase;
+  // Opted in votings
+  final List<Voting> votings;
+  final bool loading;
+
+  HomeState({
+    this.passphrase = "",
+    this.votings = const [],
+    this.loading = true,
+  });
 
   @override
-  List<Object> get props => [];
-}
+  List<Object> get props => [passphrase, votings, loading];
 
-class HomeInitial extends HomeState {}
-
-class HomeLoaded extends HomeState {
-  final List<String> passphrase;
-
-  HomeLoaded(this.passphrase);
+  HomeState copyWith({
+    String? passphrase,
+    List<Voting>? votings,
+    bool? loading,
+  }) {
+    return HomeState(
+      passphrase: passphrase ?? this.passphrase,
+      votings: votings ?? this.votings,
+      loading: loading ?? true,
+    );
+  }
 }

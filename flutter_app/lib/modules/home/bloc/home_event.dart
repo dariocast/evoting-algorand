@@ -9,3 +9,15 @@ abstract class HomeEvent extends Equatable {
 
 // quando c'è home started si deve caricare la passphrase e anche l'elenco delle transazioni
 class HomeStarted extends HomeEvent {}
+
+class HomePassphraseChanged extends HomeEvent {
+  final String? passphrase;
+
+  HomePassphraseChanged({this.passphrase});
+}
+
+class HomeCreateVoting extends HomeEvent {
+  final Map votingData;
+
+  HomeCreateVoting(this.votingData);
+}

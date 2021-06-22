@@ -1,31 +1,24 @@
-import 'package:algorand_evoting/utils/services/algorand_service.dart';
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:algorand_evoting/modules/home/repository/home_repository.dart';
 import 'package:algorand_evoting/modules/modules.dart';
 
 import 'package:algorand_evoting/config/themes/themes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => HomePage());
+    return MaterialPageRoute<void>(
+        builder: (context) => BlocProvider(
+              create: (context) =>
+                  HomeBloc(context.read<AccountBloc>(), HomeRepository())
+                    ..add(HomeStarted()),
+              child: HomePage(),
+            ));
   }
 
   @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  String? passphrase;
-
-  @override
   Widget build(BuildContext context) {
-    final state = context.watch<AccountBloc>().state;
-    if (state is AccountLoaded) {
-      state.account!.seedPhrase.then((words) {
-        setState(() {
-          print(passphrase);
-        });
-      });
-    }
+    final state = context.watch<HomeBloc>().state;
     return Scaffold(
       appBar: AppBar(
         title: Text('Home Page'),
@@ -33,25 +26,36 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: Icon(Icons.delete_forever),
             color: Colors.red,
-            onPressed: () {
-              context.read<AccountBloc>().add(
-                    AccountDeleteRequested(),
-                  );
+            onPressed: () async {
+              final result = await showOkCancelAlertDialog(
+                context: context,
+                title: 'Clear account',
+                message:
+                    'This will remove your existing account. Make sure you backed up the passphrase before continuing or you will lose your account.',
+              );
+              if (result == OkCancelResult.ok) {
+                context.read<AccountBloc>().add(
+                      AccountDeleteRequested(),
+                    );
+              }
             },
           ),
         ],
       ),
-      body: Center(
-        child: state is AccountLoaded
-            ? Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(passphrase ?? ''),
-                ),
-              )
-            : Center(
-                child: CircularProgressIndicator(),
-              ),
+      body: state.loading
+          ? CircularProgressIndicator()
+          : ListView.builder(
+              itemCount: state.votings.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(state.votings[index].title),
+                  subtitle: Text(state.votings[index].description ?? ''),
+                );
+              },
+            ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.plus_one_rounded),
+        onPressed: () {},
       ),
     );
   }

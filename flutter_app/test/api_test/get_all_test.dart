@@ -1,13 +1,25 @@
-import 'package:http/http.dart' as http;
+import 'package:algorand_evoting/modules/home/repository/home_repository.dart';
 
 void main() async {
-  var request = http.Request('GET', Uri.parse('http://localhost:8090/voting'));
+  // final secondResp = await RestApiService.getAllVoting();
 
-  http.StreamedResponse response = await request.send();
+  // print(secondResp.toString());
+  final votings = await HomeRepository().getVotings();
+  votings.forEach((voting) => print(voting));
 
-  if (response.statusCode == 200) {
-    print(await response.stream.bytesToString());
-  } else {
-    print(response.reasonPhrase);
-  }
+  // var request = http.Request('GET', Uri.parse('http://localhost:8090/voting'));
+
+  // http.StreamedResponse response = await request.send();
+
+  // if (response.statusCode == 200) {
+  //   final responseJsonString = await response.stream.bytesToString();
+  //   final restResponse = RestApiResponse.fromJson(responseJsonString);
+  //   final secondResp = await RestApiService.getAllVoting();
+
+  //   assert(restResponse == secondResp);
+
+  //   print(restResponse.toString());
+  // } else {
+  //   print(response.reasonPhrase);
+  // }
 }

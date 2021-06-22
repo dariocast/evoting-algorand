@@ -29,8 +29,8 @@ class AccountRepository {
     // ! Should be encrypted
     final privateKey = await account.keyPair.extractPrivateKeyBytes();
     final passphrase = await account.seedPhrase;
-    final entity = AccountEntity.account(
-        account, Uint8List.fromList(privateKey), passphrase.join(' '));
+    final entity =
+        AccountEntity.account(account, Uint8List.fromList(privateKey));
     await accountBox.put(0, entity);
 
     // publish on stream
@@ -45,8 +45,8 @@ class AccountRepository {
 
     // ! Should be encrypted
     final privateKey = await account.keyPair.extractPrivateKeyBytes();
-    final entity = AccountEntity.account(
-        account, Uint8List.fromList(privateKey), words.join(' '));
+    final entity =
+        AccountEntity.account(account, Uint8List.fromList(privateKey));
     await accountBox.put(0, entity);
 
     // publish on stream

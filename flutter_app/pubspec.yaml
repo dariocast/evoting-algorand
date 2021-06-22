@@ -19,6 +19,7 @@ dependencies:
   equatable: ^2.0.2
   fluro: ^2.0.3
   flutter_bloc: ^7.0.1
+  formz: ^0.4.0
   hive: ^2.0.4
   hive_flutter: ^1.0.0
   http: ^0.13.3

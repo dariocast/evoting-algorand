@@ -18,20 +18,17 @@ class AccountAdapter extends TypeAdapter<AccountEntity> {
     };
     return AccountEntity()
       ..publicAddress = fields[0] as String
-      ..privateKey = fields[1] as Uint8List
-      ..passphrase = fields[2] as String;
+      ..privateKey = fields[1] as Uint8List;
   }
 
   @override
   void write(BinaryWriter writer, AccountEntity obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(2)
       ..writeByte(0)
       ..write(obj.publicAddress)
       ..writeByte(1)
-      ..write(obj.privateKey)
-      ..writeByte(2)
-      ..write(obj.passphrase);
+      ..write(obj.privateKey);
   }
 
   @override
