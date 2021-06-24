@@ -31,6 +31,16 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.0.4
   hive_generator: ^1.1.0
+  flutter_launcher_icons: ^0.9.0
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path_ios: "assets/icons/voto-logo.png"
+  image_path_android: "assets/icons/voto-logo.png"
+  adaptive_icon_background: "assets/icons/voto-logo-background.png"
+  adaptive_icon_foreground: "assets/icons/voto-logo-foreground.png"
+
 
 flutter:
   uses-material-design: true
