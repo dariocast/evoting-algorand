@@ -76,7 +76,9 @@ class WalletPage extends StatelessWidget {
                 subtitle: 'existing account',
                 onTapped: () async {
                   final input = await showTextInputDialog(
-                    textFields: [DialogTextField()],
+                    textFields: [
+                      DialogTextField(initialText: testnetPassphrase)
+                    ],
                     context: context,
                     title: 'Recover from Passphrase',
                     message: 'Recover an account with a 25-word passphrase.',

@@ -1,4 +1,5 @@
 import 'package:algorand_evoting/config/themes/themes.dart';
+import 'package:algorand_evoting/core/account_repository/account_repository.dart';
 import 'package:algorand_evoting/modules/voting_creation/voting_creation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,7 +17,9 @@ class VotingCreationPage extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.all(12),
         child: BlocProvider(
-          create: (context) => VotingCreationBloc(),
+          create: (context) =>
+              VotingCreationBloc(context.read<AccountRepository>())
+                ..add(VotingCreationStarted()),
           child: VotingCreationForm(),
         ),
       ),

@@ -13,17 +13,17 @@ class HomeRepository {
     return List<Voting>.empty();
   }
 
-  Future<Voting> createVoting(Map votingData) async {
-    if (!apiInputIsValid(votingData, RestApiOperation.create)) {
-      throw RestApiException(message: 'Invalid input data');
-    }
-    final response = await RestApiService.createVoting(votingData);
-    if (response.status == 200 && response.data != null) {
-      return Voting.fromMap(response.data);
-    } else {
-      throw RestApiException(message: 'Creation failed');
-    }
-  }
+  // Future<Voting> createVoting(String votingData) async {
+  //   if (!apiInputIsValid(votingData, RestApiOperation.create)) {
+  //     throw RestApiException(message: 'Invalid input data');
+  //   }
+  //   final response = await RestApiService.createVoting(votingData);
+  //   if (response.status == 200 && response.data != null) {
+  //     return Voting.fromMap(response.data);
+  //   } else {
+  //     throw RestApiException(message: 'Creation failed');
+  //   }
+  // }
 
   Future<RestApiResponse> deleteVoting(String id, String passphrase) async {
     final response = await RestApiService.deleteVoting(id, passphrase);

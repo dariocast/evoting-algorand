@@ -6,43 +6,71 @@ import 'package:http/http.dart' as http;
 
 class RestApiService {
   static Future<RestApiResponse> getAllVoting() async {
-    final response = await http.get(Uri.parse(votingEndpoint));
-    return RestApiResponse.fromJson(response.body);
+    try {
+      final response = await http.get(Uri.parse(votingEndpoint));
+      return RestApiResponse.fromJson(response.body);
+    } catch (e) {
+      print(e);
+      return RestApiResponse.httpFailure(500, e.toString());
+    }
   }
 
   static Future<RestApiResponse> getVoting(String id) async {
-    final response = await http.get(Uri.parse(votingEndpoint + '/$id'));
-    return RestApiResponse.fromJson(response.body);
+    try {
+      final response = await http.get(Uri.parse(votingEndpoint + '/$id'));
+      return RestApiResponse.fromJson(response.body);
+    } catch (e) {
+      print(e);
+      return RestApiResponse.httpFailure(500, e.toString());
+    }
   }
 
   static Future<RestApiResponse> deleteVoting(
     String id,
     String passphrase,
   ) async {
-    final response = await http.delete(
-      Uri.parse(votingEndpoint + '/$id'),
-      body: {'passphrase': passphrase},
-    );
-    return RestApiResponse.fromJson(response.body);
+    try {
+      final response = await http.delete(
+        Uri.parse(votingEndpoint + '/$id'),
+        body: {'passphrase': passphrase},
+      );
+      return RestApiResponse.fromJson(response.body);
+    } catch (e) {
+      print(e);
+      return RestApiResponse.httpFailure(500, e.toString());
+    }
   }
 
-  static Future<RestApiResponse> createVoting(Map voting) async {
-    final response = await http.post(
-      Uri.parse(votingEndpoint),
-      body: voting,
-    );
-    return RestApiResponse.fromJson(response.body);
+  static Future<RestApiResponse> createVoting(String encodedVoting) async {
+    try {
+      final response = await http.post(
+        Uri.parse(votingEndpoint),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: encodedVoting,
+      );
+      return RestApiResponse.fromJson(response.body);
+    } catch (e) {
+      print(e);
+      return RestApiResponse.httpFailure(500, e.toString());
+    }
   }
 
   static Future<RestApiResponse> registerForVoting(
     String id,
     String passphrase,
   ) async {
-    final response = await http.post(
-      Uri.parse(votingOptInEndpoint + '/$id'),
-      body: {'passphrase': passphrase},
-    );
-    return RestApiResponse.fromJson(response.body);
+    try {
+      final response = await http.post(
+        Uri.parse(votingOptInEndpoint + '/$id'),
+        body: {'passphrase': passphrase},
+      );
+      return RestApiResponse.fromJson(response.body);
+    } catch (e) {
+      print(e);
+      return RestApiResponse.httpFailure(500, e.toString());
+    }
   }
 
   static Future<RestApiResponse> voteForVoting(
@@ -50,11 +78,16 @@ class RestApiService {
     String passphrase,
     String choice,
   ) async {
-    final response = await http.post(
-      Uri.parse(votingOptInEndpoint + '/$id'),
-      body: {'passphrase': passphrase, 'choice': choice},
-    );
-    return RestApiResponse.fromJson(response.body);
+    try {
+      final response = await http.post(
+        Uri.parse(votingOptInEndpoint + '/$id'),
+        body: {'passphrase': passphrase, 'choice': choice},
+      );
+      return RestApiResponse.fromJson(response.body);
+    } catch (e) {
+      print(e);
+      return RestApiResponse.httpFailure(500, e.toString());
+    }
   }
 }
 
@@ -66,7 +99,14 @@ class RestApiResponse extends Equatable {
   final String? errors;
 
   RestApiResponse(
-      this.message, this.data, this.status, this.exception, this.errors);
+      {this.message,
+      this.data,
+      this.status = 200,
+      this.exception,
+      this.errors});
+
+  RestApiResponse.httpFailure(int status, String exception)
+      : this(status: status, exception: exception);
 
   Map<String, dynamic> toMap() {
     return {
@@ -80,11 +120,11 @@ class RestApiResponse extends Equatable {
 
   factory RestApiResponse.fromMap(Map<String, dynamic> map) {
     return RestApiResponse(
-      map['message'],
-      map['data'],
-      map['status'],
-      map['exception'],
-      map['errors'],
+      message: map['message'],
+      data: map['data'],
+      status: map['status'],
+      exception: map['exception'],
+      errors: map['errors'],
     );
   }
 

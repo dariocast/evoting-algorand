@@ -1,10 +1,12 @@
 part of 'voting_creation_bloc.dart';
 
 class VotingCreationState extends Equatable {
-  final TextInput assetId;
+  final AssetInput assetId;
+  final List<Asset>? availableAssets;
   final TextInput description;
   final TextInput title;
-  final List<TextInput> options;
+  final TextInput optionOne;
+  final TextInput optionTwo;
   final DateInput regBegin;
   final DateInput regEnd;
   final DateInput voteBegin;
@@ -13,10 +15,12 @@ class VotingCreationState extends Equatable {
 
   const VotingCreationState({
     this.status = FormzStatus.pure,
-    this.assetId = const TextInput.pure(),
+    this.availableAssets,
+    this.assetId = const AssetInput.pure(),
     this.description = const TextInput.pure(),
     this.title = const TextInput.pure(),
-    this.options = const [],
+    this.optionOne = const TextInput.pure(),
+    this.optionTwo = const TextInput.pure(),
     this.regBegin = const DateInput.pure(),
     this.regEnd = const DateInput.pure(),
     this.voteBegin = const DateInput.pure(),
@@ -27,33 +31,42 @@ class VotingCreationState extends Equatable {
   List<Object?> get props => [
         title,
         description,
-        options,
+        optionOne,
+        optionTwo,
         assetId,
         regBegin,
         regEnd,
         voteBegin,
-        voteEnd
+        voteEnd,
+        availableAssets,
+        status,
       ];
 
   VotingCreationState copyWith({
-    TextInput? assetId,
+    AssetInput? assetId,
     TextInput? description,
     TextInput? title,
-    List<TextInput>? options,
+    TextInput? optionOne,
+    TextInput? optionTwo,
     DateInput? regBegin,
     DateInput? regEnd,
     DateInput? voteBegin,
     DateInput? voteEnd,
+    List<Asset>? availableAssets,
+    FormzStatus? status,
   }) {
     return VotingCreationState(
       assetId: assetId ?? this.assetId,
       description: description ?? this.description,
       title: title ?? this.title,
-      options: options ?? this.options,
+      optionOne: optionOne ?? this.optionOne,
+      optionTwo: optionTwo ?? this.optionTwo,
       regBegin: regBegin ?? this.regBegin,
       regEnd: regEnd ?? this.regEnd,
       voteBegin: voteBegin ?? this.voteBegin,
       voteEnd: voteEnd ?? this.voteEnd,
+      availableAssets: availableAssets ?? this.availableAssets,
+      status: status ?? this.status,
     );
   }
 }
