@@ -67,7 +67,10 @@ class RestApiService {
     try {
       final response = await http.post(
         Uri.parse(votingOptInEndpoint + '/$id'),
-        body: {'passphrase': passphrase},
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'passphrase': passphrase}),
       );
       return RestApiResponse.fromJson(response.body);
     } catch (e) {
@@ -83,8 +86,38 @@ class RestApiService {
   ) async {
     try {
       final response = await http.post(
-        Uri.parse(votingOptInEndpoint + '/$id'),
-        body: {'passphrase': passphrase, 'choice': choice},
+        Uri.parse(votingVoteEndpoint + '/$id'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'passphrase': passphrase, 'choice': choice}),
+      );
+      return RestApiResponse.fromJson(response.body);
+    } catch (e) {
+      print(e);
+      return RestApiResponse.httpFailure(500, e.toString());
+    }
+  }
+
+  static Future<RestApiResponse> votingLocalState(
+    String id,
+    String address,
+  ) async {
+    try {
+      final response = await http.get(
+        Uri.parse(votingStateEndpoint + '/$id/$address'),
+      );
+      return RestApiResponse.fromJson(response.body);
+    } catch (e) {
+      print(e);
+      return RestApiResponse.httpFailure(500, e.toString());
+    }
+  }
+
+  static Future<RestApiResponse> votingGlobalState(String id) async {
+    try {
+      final response = await http.get(
+        Uri.parse(votingStateEndpoint + '/$id'),
       );
       return RestApiResponse.fromJson(response.body);
     } catch (e) {

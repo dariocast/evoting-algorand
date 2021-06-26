@@ -10,17 +10,23 @@ class VotingCreationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create a voting'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(12),
-        child: BlocProvider(
-          create: (context) =>
-              VotingCreationBloc(context.read<AccountRepository>())
-                ..add(VotingCreationStarted()),
-          child: VotingCreationForm(),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pop(false);
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Create a voting'),
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(12),
+          child: BlocProvider(
+            create: (context) =>
+                VotingCreationBloc(context.read<AccountRepository>())
+                  ..add(VotingCreationStarted()),
+            child: VotingCreationForm(),
+          ),
         ),
       ),
     );

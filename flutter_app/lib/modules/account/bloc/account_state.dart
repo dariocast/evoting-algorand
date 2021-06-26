@@ -11,6 +11,7 @@ class AccountNotPresent extends AccountState {}
 
 class AccountLoaded extends AccountState {
   final Account? account;
+  final String? passphrase;
 
-  AccountLoaded({this.account});
+  AccountLoaded({this.account, this.passphrase});
 }

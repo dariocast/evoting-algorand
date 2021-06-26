@@ -9,6 +9,8 @@ abstract class VotingDetailEvent extends Equatable {
 
 class VotingDetailOptedIn extends VotingDetailEvent {}
 
+class VotingDetailLoaded extends VotingDetailEvent {}
+
 class VotingDetailVoted extends VotingDetailEvent {
   final String choice;
 
