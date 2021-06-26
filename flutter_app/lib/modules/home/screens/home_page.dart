@@ -4,6 +4,7 @@ import 'package:algorand_evoting/modules/modules.dart';
 
 import 'package:algorand_evoting/config/themes/themes.dart';
 import 'package:algorand_evoting/modules/voting_creation/voting_creation.dart';
+import 'package:algorand_evoting/modules/voting_detail/voting_detail.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatelessWidget {
@@ -86,9 +87,27 @@ class _buildList extends StatelessWidget {
       return ListView.builder(
         itemCount: state.votings.length,
         itemBuilder: (context, index) {
+          final isRegistrationOpen =
+              DateTime.now().isAfter(state.votings[index].regBegin) &&
+                  DateTime.now().isBefore(state.votings[index].regEnd);
           return ListTile(
             title: Text(state.votings[index].title),
             subtitle: Text(state.votings[index].description ?? ''),
+            trailing: isRegistrationOpen
+                ? Icon(
+                    Icons.event_available,
+                    color: Colors.green,
+                  )
+                : Icon(
+                    Icons.event_busy,
+                    color: Colors.red,
+                  ),
+            onTap: () => Navigator.of(context).push(
+              VotingDetailPage.route(state.votings[index]),
+            ),
+            onLongPress: () => context
+                .read<HomeBloc>()
+                .add(HomeDeleteVoting(state.votings[index])),
           );
         },
       );

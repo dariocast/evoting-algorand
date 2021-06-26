@@ -21,3 +21,9 @@ class HomeCreateVoting extends HomeEvent {
 
   HomeCreateVoting(this.votingData);
 }
+
+class HomeDeleteVoting extends HomeEvent {
+  final Voting voting;
+
+  HomeDeleteVoting(this.voting);
+}

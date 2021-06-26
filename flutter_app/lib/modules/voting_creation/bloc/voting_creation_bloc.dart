@@ -214,6 +214,7 @@ class VotingCreationBloc
         });
         try {
           RestApiResponse response = await RestApiService.createVoting(voting);
+          print(response.message);
           if (response.status != 200)
             yield state.copyWith(status: FormzStatus.submissionFailure);
           else

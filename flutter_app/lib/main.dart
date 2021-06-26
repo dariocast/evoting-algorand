@@ -18,7 +18,7 @@ void main() async {
   final AccountRepository accountRepository = AccountRepository();
   await accountRepository.init();
 
-  Bloc.observer = SimpleBlocObserver();
+  // Bloc.observer = SimpleBlocObserver();
 
   runApp(App(accountRepository: accountRepository));
 }

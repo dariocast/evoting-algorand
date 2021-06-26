@@ -6,3 +6,14 @@ abstract class VotingDetailEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class VotingDetailOptedIn extends VotingDetailEvent {}
+
+class VotingDetailVoted extends VotingDetailEvent {
+  final String choice;
+
+  VotingDetailVoted(this.choice);
+
+  @override
+  List<Object> get props => [choice];
+}

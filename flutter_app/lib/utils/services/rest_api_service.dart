@@ -32,7 +32,10 @@ class RestApiService {
     try {
       final response = await http.delete(
         Uri.parse(votingEndpoint + '/$id'),
-        body: {'passphrase': passphrase},
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'passphrase': passphrase}),
       );
       return RestApiResponse.fromJson(response.body);
     } catch (e) {
