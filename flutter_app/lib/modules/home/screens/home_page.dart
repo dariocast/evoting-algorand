@@ -26,13 +26,13 @@ class HomePage extends StatelessWidget {
         title: Text('Home Page'),
         actions: [
           IconButton(
-            icon: Icon(Icons.download),
+            icon: Icon(Icons.autorenew),
             onPressed: () => context.read<HomeBloc>().add(
                   HomeStarted(),
                 ),
           ),
           IconButton(
-            icon: Icon(Icons.delete_forever),
+            icon: Icon(Icons.logout),
             color: Colors.red,
             onPressed: () async {
               final result = await showOkCancelAlertDialog(
@@ -61,7 +61,7 @@ class HomePage extends StatelessWidget {
           bool success =
               await Navigator.of(context).push(VotingCreationPage.route());
           if (success) {
-            // ! Need this because of indexer per second reuqests...
+            // ! Need this because of indexer per second requests...
             await Future.delayed(const Duration(seconds: 1));
             context.read<HomeBloc>().add(
                   HomeStarted(),
@@ -91,24 +91,38 @@ class _buildList extends StatelessWidget {
               DateTime.now().isAfter(state.votings[index].regBegin) &&
                   DateTime.now().isBefore(state.votings[index].regEnd);
           return ListTile(
-            title: Text(state.votings[index].title),
-            subtitle: Text(state.votings[index].description ?? ''),
-            trailing: isRegistrationOpen
-                ? Icon(
-                    Icons.event_available,
-                    color: Colors.green,
-                  )
-                : Icon(
-                    Icons.event_busy,
-                    color: Colors.red,
+              title: Text(state.votings[index].title),
+              subtitle: Text(state.votings[index].description ?? ''),
+              trailing: isRegistrationOpen
+                  ? Text(
+                      'OPEN',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    )
+                  : Text(
+                      'CLOSED',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+              onTap: () => Navigator.of(context).push(
+                    VotingDetailPage.route(state.votings[index]),
                   ),
-            onTap: () => Navigator.of(context).push(
-              VotingDetailPage.route(state.votings[index]),
-            ),
-            onLongPress: () => context
-                .read<HomeBloc>()
-                .add(HomeDeleteVoting(state.votings[index])),
-          );
+              onLongPress: () async {
+                final result = await showOkCancelAlertDialog(
+                  context: context,
+                  title: 'Are you sure?',
+                  message: 'This will remove the voting from the system.',
+                );
+                if (result == OkCancelResult.ok) {
+                  context
+                      .read<HomeBloc>()
+                      .add(HomeDeleteVoting(state.votings[index]));
+                }
+              });
         },
       );
     } else {

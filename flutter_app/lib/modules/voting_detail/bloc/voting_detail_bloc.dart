@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:algorand_evoting/core/account_repository/account_repository.dart';
 import 'package:algorand_evoting/core/models/models.dart';
+import 'package:algorand_evoting/utils/services/algorand_service.dart';
+import 'package:algorand_evoting/utils/services/rest_api_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -19,7 +21,77 @@ class VotingDetailBloc extends Bloc<VotingDetailEvent, VotingDetailState> {
   Stream<VotingDetailState> mapEventToState(
     VotingDetailEvent event,
   ) async* {
-    if (event is VotingDetailOptedIn) {
-    } else if (event is VotingDetailVoted) {}
+    yield state.copyWith(loading: true);
+    if (event is VotingDetailLoaded) {
+      final searchResponse = await algorand
+          .indexer()
+          .accounts()
+          .whereApplicationId(int.parse(state.voting.votingId))
+          .search();
+      final address = accountRepo.account?.address;
+      bool optedIn = false;
+      searchResponse.accounts.forEach((account) {
+        if (account.address == address!.encodedAddress) {
+          optedIn = true;
+        }
+      });
+      RestApiResponse localState = await RestApiService.votingLocalState(
+        state.voting.votingId,
+        address!.encodedAddress,
+      );
+      bool voted = localState.data != null &&
+          (localState.data as Map).containsKey('voted');
+      yield state.copyWith(
+        optedIn: optedIn,
+        voted: voted,
+        loading: false,
+      );
+    } else if (event is VotingDetailOptedIn) {
+      final passphrase = (await accountRepo.account!.seedPhrase).join(' ');
+      try {
+        RestApiResponse response = await RestApiService.registerForVoting(
+            state.voting.votingId, passphrase);
+        print(response.message);
+        if (response.status == 200)
+          yield state.copyWith(
+            optedIn: true,
+            loading: false,
+          );
+        else
+          yield state.copyWith(
+            optedIn: false,
+            loading: false,
+          );
+      } on Exception catch (e) {
+        print(e);
+        yield state.copyWith(
+          optedIn: false,
+          loading: false,
+        );
+      }
+    } else if (event is VotingDetailVoted) {
+      final passphrase = (await accountRepo.account!.seedPhrase).join(' ');
+      try {
+        RestApiResponse response = await RestApiService.voteForVoting(
+            state.voting.votingId, passphrase, event.choice);
+        print(response.message);
+        if (response.status == 200)
+          yield state.copyWith(
+            voted: true,
+            loading: false,
+          );
+        else
+          yield state.copyWith(
+            voted: false,
+            loading: false,
+          );
+      } on Exception catch (e) {
+        print(e);
+        yield state.copyWith(
+          voted: false,
+          loading: false,
+        );
+      }
+    }
   }
 }

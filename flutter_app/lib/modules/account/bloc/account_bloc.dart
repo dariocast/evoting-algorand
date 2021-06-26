@@ -28,7 +28,8 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   ) async* {
     if (event is AccountStatusChanged) {
       if (event.account != null) {
-        yield AccountLoaded(account: event.account);
+        final passphrase = (await event.account!.seedPhrase).join(' ');
+        yield AccountLoaded(account: event.account, passphrase: passphrase);
       } else {
         yield AccountNotPresent();
       }

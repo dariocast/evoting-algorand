@@ -12,6 +12,8 @@ servers:
 tags:
 - name: voting
   description: Everything about voting management
+- name: voting state
+  description: Get local or global state directly from algorand
 - name: algorand
   description: SDK operation toward algorand blockchain
 paths:
@@ -151,6 +153,68 @@ paths:
         400:
           description: vote not casted on algorand blockchain due to some error
           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /voting/state/{votingId}/{address}:
+    get:
+      tags:
+      - voting state
+      summary: Get local state of voting by ID
+      description: Returns a single voting state
+      operationId: votingLocalState
+      parameters:
+      - name: votingId
+        in: path
+        description: ID of voting to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: address
+        in: path
+        description: address to check
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voting'
+        400:
+          description: Something bad happened
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /voting/state/{votingId}:
+    get:
+      tags:
+      - voting state
+      summary: Get global state of voting by ID
+      description: Returns a single voting state
+      operationId: votingGlobalState
+      parameters:
+      - name: votingId
+        in: path
+        description: ID of voting to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voting'
+        400:
+          description: Something bad happened
+          content: 
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
