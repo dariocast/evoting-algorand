@@ -11,6 +11,8 @@ class AlgoVotingErrorCode(Enum):
     VOTING_NOT_FOUND = 6,
     RIGHT_TO_VOTE_REQUIRED = 7,
     ADDRESS_NOT_ASSET_CREATOR = 8,
+    ALREADY_VOTED = 9,
+    REGISTRATION_REQUIRED = 10,
 
     @staticmethod
     def getErrorCodeListToString(list):

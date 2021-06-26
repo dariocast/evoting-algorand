@@ -8,7 +8,7 @@ from flask import Flask, request
 from flask_mongoengine import MongoEngine
 
 from algorand import evoting, evoting_utils
-from algosdk.error import AlgodHTTPError
+from algosdk.error import AlgodHTTPError, IndexerHTTPError
 from builders.response_builder import ResponseBuilder
 from errors import AlgoVotingErrorCode, AlgoVotingException
 from models.voting import Voting
@@ -194,8 +194,8 @@ def vote(id):
     if voting.count() < 1:
         raise AlgoVotingException(status_code=404, exception_type=AlgoVotingErrorCode.VOTING_NOT_FOUND, message=f"Voting with id {id} not found")
     voting = voting[0]
+    address = evoting_utils.get_address_from_mnemonic(passphrase)
     if voting.start_voting_time <= datetime.datetime.now() <= voting.end_voting_time:
-        address = evoting_utils.get_address_from_mnemonic(passphrase)
         address_holds_spending_token = evoting_utils.address_holds_asset(
             indexer=indexer,
             address=address,
@@ -206,6 +206,16 @@ def vote(id):
                 exception_type=AlgoVotingErrorCode.RIGHT_TO_VOTE_REQUIRED,
                 message=f"Address {address} does not have right to vote. Token {voting.asset_id} is required"
             )
+        # Check per vedere se ha votato già (il teal cmq lo impedirebbe)
+        local_state = evoting.read_local_state(client,address, int(id))
+        log.debug(local_state)
+        if "voted" in local_state:
+            log.debug(f'{address} already voted for {id}')
+            raise AlgoVotingException(
+                status_code=400,
+                exception_type=AlgoVotingErrorCode.ALREADY_VOTED,
+                message=f"Address has already voted"
+            )
         try:
             evoting.call_app(
                 client=client,
@@ -215,8 +225,8 @@ def vote(id):
                 app_args=[b'vote', choice.encode()],
                 assetId=int(voting.asset_id)
             )
-            to_return = evoting.read_local_state(client, evoting_utils.get_address_from_mnemonic(passphrase), id)
-            return ResponseBuilder(data=to_return,message="Here you are",status_code=200).build()
+            to_return = evoting.read_local_state(client, evoting_utils.get_address_from_mnemonic(passphrase), int(id))
+            return ResponseBuilder(data=to_return,message="Thank you. Your vote counts!",status_code=200).build()
         except Exception as e:
             return ResponseBuilder(exception=e,status_code=400).build()
     else:
@@ -226,6 +236,34 @@ def vote(id):
             message=f"Voting is already closed or has not been opened yet. Start date: {voting.start_voting_time}, end date: {voting.end_voting_time}"
         )
 
+
+@app.route('/voting/state/<id>', methods=['GET'])
+def registry_global_state(id):
+    log = logging.getLogger("{}.{}".format(__package__, __name__))
+    log.debug("Read evoting global state called")    
+    global_state = evoting.read_global_state(client, id)
+    log.debug(f"Global state for {id}: {global_state}")
+    return ResponseBuilder(
+        data=global_state,
+        status_code=200).build()
+
+
+@app.route('/voting/state/<id>/<address>', methods=['GET'])
+def registry_local_state(id, address):
+    log = logging.getLogger("{}.{}".format(__package__, __name__))
+    log.debug(f"Read evoting local state for address {address} called")    
+    has_opted_in = evoting_utils.address_opted_in_app(indexer, address, id)
+    if not has_opted_in:
+        raise AlgoVotingException(
+            status_code=400,
+            exception_type=AlgoVotingErrorCode.REGISTRATION_REQUIRED,
+            message=f"Address {address} need to register for the voting to have a state for that voting"
+        )
+    local_state = evoting.read_local_state(client, address, int(id))
+    log.debug(f"{id} Local state: {local_state}")
+    return ResponseBuilder(
+        data=local_state,
+        status_code=200).build()
 
 @app.errorhandler(AlgoVotingException)
 def handle_exception(e: AlgoVotingException):
@@ -240,6 +278,16 @@ def handle_exception(e: AlgoVotingException):
 
 @app.errorhandler(AlgodHTTPError)
 def handle_exception(e: AlgodHTTPError):
+    try:
+        status_code = e.code if e.code else 400
+    except:
+        status_code = 500
+    
+    response = ResponseBuilder(message=json.loads(str(e))['message'], exception=e)
+    return response.build()
+
+@app.errorhandler(IndexerHTTPError)
+def handle_exception(e: IndexerHTTPError):
     try:
         status_code = e.code if e.code else 400
     except:
