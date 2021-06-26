@@ -1,13 +1,9 @@
-import 'config/routes/app_router.dart';
+import 'package:algorand_evoting/modules/modules.dart';
+
 import 'core/account_repository/account_repository.dart';
-import 'home/home.dart';
-import 'splash/splash.dart';
-import 'wallet/wallet.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'account/account.dart';
 
 class App extends StatelessWidget {
   const App({

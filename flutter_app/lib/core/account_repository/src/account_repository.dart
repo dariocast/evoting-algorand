@@ -28,6 +28,7 @@ class AccountRepository {
     final account = await algorand.createAccount();
     // ! Should be encrypted
     final privateKey = await account.keyPair.extractPrivateKeyBytes();
+    final passphrase = await account.seedPhrase;
     final entity =
         AccountEntity.account(account, Uint8List.fromList(privateKey));
     await accountBox.put(0, entity);

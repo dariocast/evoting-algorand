@@ -5,7 +5,7 @@ class WalletCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final Color textColor;
-  final Color backgroundColor;
+  // final Color backgroundColor;
   final VoidCallback onTapped;
 
   WalletCard({
@@ -13,13 +13,13 @@ class WalletCard extends StatelessWidget {
     required this.subtitle,
     required this.onTapped,
     this.textColor = Palette.textColor,
-    this.backgroundColor = const Color(0xFFfff9f9),
+    // this.backgroundColor = const Color(0xFFfff9f9),
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: backgroundColor,
+      // color: backgroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
       ),
