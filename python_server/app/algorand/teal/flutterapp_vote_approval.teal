@@ -183,7 +183,7 @@ int 1
 return
 voted:
 pop
-int 1
+int 0
 return
 register:
 global Round
