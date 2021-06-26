@@ -55,11 +55,8 @@ def format_state(state):
         value = item['value']
         formatted_key = base64.b64decode(key).decode('utf-8')
         if value['type'] == 1:
-            # byte string
-            if formatted_key == 'voted':
-                formatted_value = base64.b64decode(value['bytes']).decode('utf-8')
-            else:
-                formatted_value = value['bytes']
+            # string
+            formatted_value = base64.b64decode(value['bytes']).decode('utf-8')
             formatted[formatted_key] = formatted_value
         else:
             # integer
@@ -182,7 +179,7 @@ def prettify_voting_info(voting: Voting, indexer):
     voting_json_prettified['regBegin'] = str(voting.start_subscription_time)
     voting_json_prettified['regEnd'] = str(voting.end_subscription_time)
     voting_json_prettified['voteBegin'] = str(voting.start_voting_time)
-    voting_json_prettified['voteBegin'] = str(voting.end_voting_time)
+    voting_json_prettified['voteEnd'] = str(voting.end_voting_time)
     voting_json_prettified['creator'] = voting.creator
     voting_json_prettified['title'] = voting.title
     voting_json_prettified['options'] = voting.options

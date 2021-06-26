@@ -1,7 +1,5 @@
-import '../themes/themes.dart';
-import '../../home/home.dart';
-import '../../splash/screens/splash_page.dart';
-import '../../wallet/wallet.dart';
+import 'package:algorand_evoting/config/themes/themes.dart';
+import 'package:algorand_evoting/modules/modules.dart';
 
 class AppRouter {
   Route? onGenerateRoute(RouteSettings settings) {

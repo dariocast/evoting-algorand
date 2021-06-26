@@ -12,6 +12,8 @@ servers:
 tags:
 - name: voting
   description: Everything about voting management
+- name: voting state
+  description: Get local or global state directly from algorand
 - name: algorand
   description: SDK operation toward algorand blockchain
 paths:
@@ -26,12 +28,15 @@ paths:
         200:
           description: successful operation
           content:
-            application/json:
+            array:
               schema:
                 $ref: '#/components/schemas/Voting'
         400:
           description: Unknown error
-          content: {}
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voting'
     post:
       tags:
       - voting
@@ -42,13 +47,21 @@ paths:
         content:
           application/json:
             schema:
-                $ref: '#/components/schemas/RequestBody'
+                $ref: '#/components/schemas/CreationRequestBody'
         required: true
       responses:
-        405:
+        200:
+          description: App created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voting'
+        400:
           description: Invalid input
-          content: {}
-      x-codegen-request-body-name: body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
   /voting/{votingId}:
     get:
       tags:
@@ -73,10 +86,16 @@ paths:
                 $ref: '#/components/schemas/Voting'
         400:
           description: Invalid ID supplied
-          content: {}
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
         404:
           description: voting not found
-          content: {}
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
     delete:
       tags:
       - voting
@@ -91,20 +110,148 @@ paths:
           type: integer
           format: int64
       responses:
+        200:
+          description: App successfully deleted and removed from account
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
         400:
           description: Invalid ID supplied
-          content: {}
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
         404:
           description: voting not found
-          content: {}
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /algorand/vote/{votingId}:
+    post:
+      tags:
+      - algorand
+      summary: Call application on algorand for voting
+      description: Call application on algorand for voting
+      operationId: vote
+      parameters:
+      - name: votingId
+        in: path
+        description: ID of voting to call
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: vote successfully casted on algorand blockchain
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        400:
+          description: vote not casted on algorand blockchain due to some error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /voting/state/{votingId}/{address}:
+    get:
+      tags:
+      - voting state
+      summary: Get local state of voting by ID
+      description: Returns a single voting state
+      operationId: votingLocalState
+      parameters:
+      - name: votingId
+        in: path
+        description: ID of voting to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: address
+        in: path
+        description: address to check
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voting'
+        400:
+          description: Something bad happened
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /voting/state/{votingId}:
+    get:
+      tags:
+      - voting state
+      summary: Get global state of voting by ID
+      description: Returns a single voting state
+      operationId: votingGlobalState
+      parameters:
+      - name: votingId
+        in: path
+        description: ID of voting to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voting'
+        400:
+          description: Something bad happened
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /algorand/register/{votingId}:
+    post:
+      tags:
+      - algorand
+      summary: Opt account into application on algorand for voting
+      description: Opt account into application on algorand for voting
+      operationId: opt-in
+      parameters:
+      - name: votingId
+        in: path
+        description: ID of voting to opt-in
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: account successfully opted into app on algorand
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        400:
+          description: vote not casted on algorand blockchain due to some error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+          
 components:
   schemas:
     Voting:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
         algorandAppId:
           type: string
         assetId:
@@ -119,7 +266,17 @@ components:
             type: string
         creator:
           type: string
-    RequestBody:
+        regBegin:
+          type: string
+        regEnd:
+          type: string
+        voteBegin:
+          type: string
+        voteEnd:
+          type: string
+        subscribers:
+          type: integer
+    CreationRequestBody:
       type: object
       properties:
         assetId:
@@ -132,16 +289,28 @@ components:
           type: array
           items:
             type: string
+        regBegin:
+          type: string
+        regEnd:
+          type: string
+        voteBegin:
+          type: string
+        voteEnd:
+          type: string
         passphrase:
           type: string
     ApiResponse:
       type: object
       properties:
-        code:
+        status_code:
           type: integer
           format: int32
         data:
           type: object
           properties: {}
         message:
+          type: string
+        exception:
+          type: string
+        errors:
           type: string
