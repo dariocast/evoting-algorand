@@ -63,6 +63,21 @@ def format_state(state):
             formatted[formatted_key] = value['uint']
     return formatted
 
+def format_voting_results(state):
+    formatted = {}
+    for item in state:
+        key = item['key']
+        value = item['value']
+        formatted_key = base64.b64decode(key).decode('utf-8')
+        if value['type'] == 1 and formatted_key != 'Creator':
+            # string
+            formatted_value = base64.b64decode(value['bytes']).decode('utf-8')
+            formatted[formatted_key] = formatted_value
+        else:
+            # integer
+            formatted[formatted_key] = value['uint']
+    return formatted
+
 # convert 64 bit integer i to byte string
 def intToBytes(i):
     return i.to_bytes(8, "big")
