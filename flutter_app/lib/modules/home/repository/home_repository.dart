@@ -1,9 +1,12 @@
 import 'package:algorand_evoting/core/models/models.dart';
 import 'package:algorand_evoting/utils/helpers/api_utils.dart';
+import 'package:algorand_evoting/utils/services/algorand_service.dart';
 import 'package:algorand_evoting/utils/services/rest_api_service.dart';
 
 class HomeRepository {
   Future<List<Voting>> getVotings() async {
+    // ! Need this because of indexer per second requests limit...
+    await Future.delayed(const Duration(seconds: 1));
     final response = await RestApiService.getAllVoting();
     if (response.data != null) {
       List<Voting> votings = List<Voting>.from(
@@ -11,6 +14,30 @@ class HomeRepository {
       return votings;
     }
     return List<Voting>.empty();
+  }
+
+  Future<List<SimpleAsset>> getAssets(String address) async {
+    List<SimpleAsset> assetsList = List.empty(growable: true);
+    // * Asset retrieving
+    final accountInfo = await algorand.indexer().getAccountById(address);
+    final assets = accountInfo.account.assets;
+    assets.forEach((asset) async {
+      // ! Need this because of indexer per second requests limit...
+      await Future.delayed(const Duration(seconds: 1));
+      final assetResponse = await algorand
+          .indexer()
+          .assets()
+          .whereAssetId(asset.assetId)
+          .search(limit: 1);
+      final assetParams = assetResponse.assets[0].params;
+      assetsList.add(SimpleAsset(
+        name: assetParams.name ?? '',
+        id: asset.assetId,
+        balance: asset.amount,
+        isCreator: asset.creator == address ? true : false,
+      ));
+    });
+    return assetsList;
   }
 
   // Future<Voting> createVoting(String votingData) async {

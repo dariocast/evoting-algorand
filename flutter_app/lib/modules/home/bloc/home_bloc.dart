@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:algorand_evoting/modules/account/account.dart';
 import 'package:algorand_evoting/core/models/models.dart';
 import 'package:algorand_evoting/modules/home/repository/home_repository.dart';
+import 'package:algorand_evoting/utils/services/algorand_service.dart';
 import 'package:algorand_evoting/utils/services/rest_api_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -53,9 +54,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final words = await accountState.account!.seedPhrase;
       final passphrase = words.join(' ');
       List<Voting> votings = await _repository.getVotings();
+      List<SimpleAsset> assets =
+          await _repository.getAssets(accountState.account!.publicAddress);
       yield state.copyWith(
         passphrase: passphrase,
         votings: votings,
+        assets: assets,
         loading: false,
       );
     } else {
