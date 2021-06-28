@@ -175,7 +175,8 @@ def read_global_state(client, addr, app_id):
 # read app global state
 def read_global_state(client, app_id):
     app = client.application_info(app_id)
-    return evoting_utils.format_state(app['params']['global-state'])
+    # return evoting_utils.format_state(app['params']['global-state'])
+    return evoting_utils.format_voting_results(app['params']['global-state'])
 
 
 # delete application
