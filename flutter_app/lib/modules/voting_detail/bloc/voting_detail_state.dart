@@ -5,12 +5,14 @@ class VotingDetailState extends Equatable {
   final bool optedIn;
   final bool voted;
   final bool loading;
+  final String assetName;
 
   const VotingDetailState({
     required this.voting,
     this.optedIn = false,
     this.voted = false,
     this.loading = true,
+    this.assetName = '',
   });
 
   @override
@@ -22,6 +24,7 @@ class VotingDetailState extends Equatable {
       'optedIn': optedIn,
       'voted': voted,
       'loading': loading,
+      'assetName': assetName,
     };
   }
 
@@ -31,6 +34,7 @@ class VotingDetailState extends Equatable {
       optedIn: map['optedIn'],
       voted: map['voted'],
       loading: map['loading'],
+      assetName: map['assetName'],
     );
   }
 
@@ -44,12 +48,14 @@ class VotingDetailState extends Equatable {
     bool? optedIn,
     bool? voted,
     bool? loading,
+    String? assetName,
   }) {
     return VotingDetailState(
       voting: voting ?? this.voting,
       optedIn: optedIn ?? this.optedIn,
       voted: voted ?? this.voted,
       loading: loading ?? this.loading,
+      assetName: assetName ?? this.assetName,
     );
   }
 }

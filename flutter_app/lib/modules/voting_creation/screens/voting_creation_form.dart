@@ -96,6 +96,7 @@ class _SubmitButton extends StatelessWidget {
                         ScaffoldMessenger.of(context)
                           ..hideCurrentSnackBar()
                           ..showSnackBar(SnackBar(
+                            duration: Duration(seconds: 1),
                             content: Text(message),
                           ));
                       },

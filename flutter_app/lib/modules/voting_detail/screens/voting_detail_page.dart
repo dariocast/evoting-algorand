@@ -34,6 +34,7 @@ class VotingDetailPage extends StatelessWidget {
         appBar: AppBar(
           title: Text(voting.title),
           actions: [
+            // isRegistrationTime(state) || isVotingTime(state)
             !isRegistrationTime(state) && !isVotingTime(state)
                 ? IconButton(
                     onPressed: () async {
@@ -92,6 +93,7 @@ class VotingDetailPage extends StatelessWidget {
             ),
           ),
         ),
+        Text('This voting requires asset: ${state.assetName}'),
         Padding(
           padding: EdgeInsets.all(8),
           child: Text(
@@ -116,75 +118,81 @@ class VotingDetailPage extends StatelessWidget {
             ? Center(
                 child: LinearProgressIndicator(),
               )
-            : Row(
-                children: [
-                  BlocListener<VotingDetailBloc, VotingDetailState>(
-                    listener: (context, state) {
-                      ScaffoldMessenger.of(context)
-                        ..hideCurrentSnackBar()
-                        ..showSnackBar(const SnackBar(
-                            content:
-                                Text('Successfully registered for voting')));
-                    },
-                    listenWhen: (previous, current) =>
-                        previous.optedIn != current.optedIn,
-                    child: Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                            onPressed: !state.optedIn
-                                ? () {
-                                    context
-                                        .read<VotingDetailBloc>()
-                                        .add(VotingDetailOptedIn());
-                                  }
-                                : null,
-                            child: Center(
-                              child: Text('Register'),
-                            )),
+            : !isRegistrationOpen && !isVoteOpen
+                ? Center(
+                    child: Text('This voting is closed, check results'),
+                  )
+                : Row(
+                    children: [
+                      BlocListener<VotingDetailBloc, VotingDetailState>(
+                        listener: (context, state) {
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(const SnackBar(
+                                content: Text(
+                                    'Successfully registered for voting')));
+                        },
+                        listenWhen: (previous, current) =>
+                            previous.optedIn != current.optedIn,
+                        child: Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                                onPressed: !state.optedIn
+                                    ? () {
+                                        context
+                                            .read<VotingDetailBloc>()
+                                            .add(VotingDetailOptedIn());
+                                      }
+                                    : null,
+                                child: Center(
+                                  child: Text('Register'),
+                                )),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  BlocListener<VotingDetailBloc, VotingDetailState>(
-                    listener: (context, state) {
-                      ScaffoldMessenger.of(context)
-                        ..hideCurrentSnackBar()
-                        ..showSnackBar(const SnackBar(
-                            content: Text('Thank you. Your vote counts!')));
-                    },
-                    listenWhen: (previous, current) =>
-                        previous.voted != current.voted,
-                    child: Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                            onPressed: !state.voted
-                                ? () async {
-                                    final choice = await showConfirmationDialog(
-                                      context: context,
-                                      title: 'Vote',
-                                      message:
-                                          'Choose the option you want to vote for.',
-                                      actions: state.voting.options
-                                          .map((e) => AlertDialogAction(
-                                              key: e, label: e))
-                                          .toList(),
-                                    );
-                                    if (choice != null && choice.length > 0) {
-                                      context
-                                          .read<VotingDetailBloc>()
-                                          .add(VotingDetailVoted(choice));
-                                    }
-                                  }
-                                : null,
-                            child: Center(
-                              child: Text('Vote'),
-                            )),
+                      BlocListener<VotingDetailBloc, VotingDetailState>(
+                        listener: (context, state) {
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(const SnackBar(
+                                content: Text('Thank you. Your vote counts!')));
+                        },
+                        listenWhen: (previous, current) =>
+                            previous.voted != current.voted,
+                        child: Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                                onPressed: !state.voted
+                                    ? () async {
+                                        final choice =
+                                            await showConfirmationDialog(
+                                          context: context,
+                                          title: 'Vote',
+                                          message:
+                                              'Choose the option you want to vote for.',
+                                          actions: state.voting.options
+                                              .map((e) => AlertDialogAction(
+                                                  key: e, label: e))
+                                              .toList(),
+                                        );
+                                        if (choice != null &&
+                                            choice.length > 0) {
+                                          context
+                                              .read<VotingDetailBloc>()
+                                              .add(VotingDetailVoted(choice));
+                                        }
+                                      }
+                                    : null,
+                                child: Center(
+                                  child: Text('Vote'),
+                                )),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
-              )
+                    ],
+                  )
       ],
     );
   }

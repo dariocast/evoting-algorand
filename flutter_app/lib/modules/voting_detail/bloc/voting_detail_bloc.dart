@@ -23,6 +23,12 @@ class VotingDetailBloc extends Bloc<VotingDetailEvent, VotingDetailState> {
   ) async* {
     yield state.copyWith(loading: true);
     if (event is VotingDetailLoaded) {
+      final searchAsset = await algorand
+          .indexer()
+          .assets()
+          .whereAssetId(int.parse(state.voting.requiredAsset))
+          .search();
+      final asset = searchAsset.assets.elementAt(0).params.name;
       final searchResponse = await algorand
           .indexer()
           .accounts()
@@ -45,6 +51,7 @@ class VotingDetailBloc extends Bloc<VotingDetailEvent, VotingDetailState> {
         optedIn: optedIn,
         voted: voted,
         loading: false,
+        assetName: asset,
       );
     } else if (event is VotingDetailOptedIn) {
       final passphrase = (await accountRepo.account!.seedPhrase).join(' ');

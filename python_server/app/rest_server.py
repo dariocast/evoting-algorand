@@ -35,6 +35,7 @@ def home():
     log.debug("Homepage called")
     return 'Python Server is up and running'
 
+# TODO Handle creation failed due to max app reached
 @app.route('/voting', methods=['POST'])
 def createVoting():
     log = logging.getLogger("{}.{}".format(__package__, __name__))
@@ -238,7 +239,7 @@ def vote(id):
 
 
 @app.route('/voting/state/<id>', methods=['GET'])
-def registry_global_state(id):
+def voting_global_state(id):
     log = logging.getLogger("{}.{}".format(__package__, __name__))
     log.debug("Read evoting global state called")    
     global_state = evoting.read_global_state(client, id)
