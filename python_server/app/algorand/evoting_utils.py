@@ -3,7 +3,7 @@ import logging
 import os
 import json
 
-from algosdk import mnemonic
+from algosdk import encoding, mnemonic
 from algosdk.future import transaction
 from algorand import evoting
 
@@ -56,7 +56,11 @@ def format_state(state):
         formatted_key = base64.b64decode(key).decode('utf-8')
         if value['type'] == 1:
             # string
-            formatted_value = base64.b64decode(value['bytes']).decode('utf-8')
+            try:
+                formatted_value = base64.b64decode(value['bytes']).decode('utf-8')
+            except:
+                # It is an address, so base32
+                formatted_value = encoding.encode_address(base64.b64decode(value['bytes']))
             formatted[formatted_key] = formatted_value
         else:
             # integer

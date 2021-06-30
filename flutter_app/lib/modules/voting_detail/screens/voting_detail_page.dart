@@ -4,6 +4,7 @@ import 'package:algorand_evoting/core/account_repository/account_repository.dart
 import 'package:algorand_evoting/core/models/voting.dart';
 import 'package:algorand_evoting/modules/voting_detail/voting_detail.dart';
 import 'package:algorand_evoting/utils/services/rest_api_service.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -40,27 +41,30 @@ class VotingDetailPage extends StatelessWidget {
                     onPressed: () async {
                       final globalState = await _getGlobalState(voting);
                       showModalBottomSheet(
-                          context: context,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          builder: (context) {
-                            return Container(
-                              height: 400,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: globalState
-                                    .map((entry) => Text(
-                                          '${entry.name}: ${entry.counter}',
-                                          style: TextStyle(
-                                            fontSize: fontSizeLarge,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ))
-                                    .toList(),
+                        context: context,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        builder: (context) => globalState.length > 0
+                            ? Container(
+                                height: 400,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: globalState
+                                      .map((entry) => Text(
+                                            '${entry.name}: ${entry.counter}',
+                                            style: TextStyle(
+                                              fontSize: fontSizeLarge,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ))
+                                      .toList(),
+                                ),
+                              )
+                            : Center(
+                                child: Text('No results'),
                               ),
-                            );
-                          });
+                      );
                     },
                     icon: Icon(Icons.leaderboard),
                   )
@@ -84,18 +88,58 @@ class VotingDetailPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(12),
-            child: Text(
-              state.voting.description ?? 'Description unavailable',
-              style: TextStyle(
-                  fontSize: fontSizeXXLarge, fontStyle: FontStyle.italic),
-            ),
+          // flex: 3,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(12),
+                child: Text(
+                  state.voting.description ?? 'Description unavailable',
+                  style: TextStyle(
+                      fontSize: fontSizeXXLarge, fontStyle: FontStyle.italic),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text('Available options'),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: state.voting.options
+                    .map((element) => Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              element,
+                              style: TextStyle(
+                                fontSize: fontSizeXLarge,
+                              ),
+                            ),
+                          ),
+                        ))
+                    .toList(),
+              )
+            ],
           ),
         ),
-        Text('This voting requires asset: ${state.assetName}'),
         Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.only(top: 8.0, bottom: 100.0),
+          child: Column(
+            children: [
+              Text(
+                'This voting requires one unit of the following asset: ',
+              ),
+              Text(
+                state.assetName,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: fontSizeLarge),
+              )
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(12),
           child: Text(
             'Registration from ${DateFormat('yyyy-MM-dd HH:mm').format(state.voting.regBegin)} to ${DateFormat('yyyy-MM-dd HH:mm').format(state.voting.regEnd)}',
             style: TextStyle(
@@ -105,7 +149,7 @@ class VotingDetailPage extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: EdgeInsets.all(8),
+          padding: EdgeInsets.all(12),
           child: Text(
             'Voting from ${DateFormat('yyyy-MM-dd HH:mm').format(state.voting.voteBegin)} to ${DateFormat('yyyy-MM-dd HH:mm').format(state.voting.voteEnd)}',
             style: TextStyle(
@@ -115,86 +159,90 @@ class VotingDetailPage extends StatelessWidget {
           ),
         ),
         state.loading
-            ? Center(
-                child: LinearProgressIndicator(),
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: LinearProgressIndicator(),
+                ),
               )
             : !isRegistrationOpen && !isVoteOpen
-                ? Center(
-                    child: Text('This voting is closed, check results'),
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: Text('This voting is closed, check results'),
+                    ),
                   )
-                : Row(
-                    children: [
-                      BlocListener<VotingDetailBloc, VotingDetailState>(
-                        listener: (context, state) {
-                          ScaffoldMessenger.of(context)
-                            ..hideCurrentSnackBar()
-                            ..showSnackBar(const SnackBar(
-                                content: Text(
-                                    'Successfully registered for voting')));
-                        },
-                        listenWhen: (previous, current) =>
-                            previous.optedIn != current.optedIn,
-                        child: Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                                onPressed: !state.optedIn
-                                    ? () {
-                                        context
-                                            .read<VotingDetailBloc>()
-                                            .add(VotingDetailOptedIn());
-                                      }
-                                    : null,
-                                child: Center(
-                                  child: Text('Register'),
-                                )),
-                          ),
-                        ),
-                      ),
-                      BlocListener<VotingDetailBloc, VotingDetailState>(
-                        listener: (context, state) {
-                          ScaffoldMessenger.of(context)
-                            ..hideCurrentSnackBar()
-                            ..showSnackBar(const SnackBar(
-                                content: Text('Thank you. Your vote counts!')));
-                        },
-                        listenWhen: (previous, current) =>
-                            previous.voted != current.voted,
-                        child: Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                                onPressed: !state.voted
-                                    ? () async {
-                                        final choice =
-                                            await showConfirmationDialog(
-                                          context: context,
-                                          title: 'Vote',
-                                          message:
-                                              'Choose the option you want to vote for.',
-                                          actions: state.voting.options
-                                              .map((e) => AlertDialogAction(
-                                                  key: e, label: e))
-                                              .toList(),
-                                        );
-                                        if (choice != null &&
-                                            choice.length > 0) {
-                                          context
-                                              .read<VotingDetailBloc>()
-                                              .add(VotingDetailVoted(choice));
-                                        }
-                                      }
-                                    : null,
-                                child: Center(
-                                  child: Text('Vote'),
-                                )),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
+                : _buildActions(state, context)
       ],
     );
+  }
+
+  Widget _buildActions(VotingDetailState votingState, BuildContext context) {
+    if (!votingState.optedIn) {
+      return BlocListener<VotingDetailBloc, VotingDetailState>(
+        listener: (context, state) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(const SnackBar(
+                content: Text('Successfully registered for voting')));
+        },
+        listenWhen: (previous, current) => previous.optedIn != current.optedIn,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ElevatedButton(
+              onPressed: () {
+                context.read<VotingDetailBloc>().add(VotingDetailOptedIn());
+              },
+              child: Center(
+                child: Text('Register'),
+              )),
+        ),
+      );
+    } else if (votingState.optedIn && !votingState.voted) {
+      return BlocListener<VotingDetailBloc, VotingDetailState>(
+        listener: (context, state) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+                const SnackBar(content: Text('Thank you. Your vote counts!')));
+        },
+        listenWhen: (previous, current) => previous.voted != current.voted,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ElevatedButton(
+              onPressed: () async {
+                final choice = await showConfirmationDialog(
+                  context: context,
+                  title: 'Vote',
+                  message: 'Choose the option you want to vote for.',
+                  actions: votingState.voting.options
+                      .map((e) => AlertDialogAction(key: e, label: e))
+                      .toList(),
+                );
+                if (choice != null && choice.length > 0) {
+                  context
+                      .read<VotingDetailBloc>()
+                      .add(VotingDetailVoted(choice));
+                }
+              },
+              child: Center(
+                child: Text('Vote'),
+              )),
+        ),
+      );
+    } else
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          'You have already voted for this voting',
+          style: TextStyle(
+            fontSize: fontSizeLarge,
+            fontWeight: FontWeight.bold,
+            fontStyle: FontStyle.italic,
+            backgroundColor: Colors.lightGreen[300],
+          ),
+        ),
+      );
   }
 
   bool isVotingTime(VotingDetailState state) {

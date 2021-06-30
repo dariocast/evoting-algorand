@@ -35,7 +35,6 @@ def home():
     log.debug("Homepage called")
     return 'Python Server is up and running'
 
-# TODO Handle creation failed due to max app reached
 @app.route('/voting', methods=['POST'])
 def createVoting():
     log = logging.getLogger("{}.{}".format(__package__, __name__))
@@ -284,7 +283,7 @@ def handle_exception(e: AlgodHTTPError):
     except:
         status_code = 500
     
-    response = ResponseBuilder(message=json.loads(str(e))['message'], exception=e)
+    response = ResponseBuilder(status_code=status_code, message=json.loads(str(e))['message'], exception=e)
     return response.build()
 
 @app.errorhandler(IndexerHTTPError)
@@ -294,7 +293,7 @@ def handle_exception(e: IndexerHTTPError):
     except:
         status_code = 500
     
-    response = ResponseBuilder(message=json.loads(str(e))['message'], exception=e)
+    response = ResponseBuilder(status_code=status_code, message=json.loads(str(e))['message'], exception=e)
     return response.build()
 
 

@@ -284,14 +284,19 @@ class HomePage extends StatelessWidget {
               itemCount: homeState.assets.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  leading: Icon(Icons.receipt_outlined),
+                  leading: Column(
+                    children: [
+                      Icon(Icons.receipt_outlined),
+                      Text(
+                        homeState.assets[index].isCreator ? 'creator' : '',
+                        style: TextStyle(fontSize: fontSizeMicro),
+                      ),
+                    ],
+                  ),
                   title: Text(homeState.assets[index].name),
-                  subtitle: homeState.assets[index].isCreator
-                      ? Text(
-                          'You created this',
-                          style: TextStyle(color: Colors.lightGreenAccent),
-                        )
-                      : null,
+                  subtitle: Text(
+                    'balance: ${homeState.assets[index].balance.toString()} ${homeState.assets[index].unitName}',
+                  ),
                   trailing: Text(
                     'ID: ${homeState.assets[index].id}',
                     style: TextStyle(fontWeight: FontWeight.bold),
