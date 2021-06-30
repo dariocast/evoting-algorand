@@ -34,7 +34,8 @@ class HomeRepository {
         name: assetParams.name ?? '',
         id: asset.assetId,
         balance: asset.amount,
-        isCreator: asset.creator == address ? true : false,
+        unitName: assetParams.unitName ?? '',
+        isCreator: assetParams.creator == address ? true : false,
       ));
     });
     return assetsList;
