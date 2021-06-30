@@ -204,6 +204,8 @@ def prettify_voting_info(voting: Voting, indexer):
     voting_json_prettified['options'] = voting.options
     voting_json_prettified['description'] = voting.description
     voting_json_prettified['requiredAsset'] = voting.asset_id
-    voting_json_prettified['numSubscribers'] = n_address_opted_in_app(indexer, voting.algo_id)
-
+    try:
+        voting_json_prettified['numSubscribers'] = n_address_opted_in_app(indexer, voting.algo_id)
+    except:
+        voting_json_prettified['numSubscribers'] = 0
     return voting_json_prettified
