@@ -117,7 +117,7 @@ class _AssetSelection extends StatelessWidget {
           previous.availableAssets != current.availableAssets,
       builder: (context, state) {
         return DropdownButtonFormField(
-          hint: Text('Asset id'),
+          hint: Text('Choose one of your assets as voting token'),
           key: const Key('voteCreation_assetIdInput_DropdownField'),
           onChanged: (Asset? assetId) => context
               .read<VotingCreationBloc>()

@@ -58,7 +58,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           await _repository.getAssets(accountState.account!.publicAddress);
       yield state.copyWith(
         passphrase: passphrase,
-        votings: votings,
+        votings: votings.length > 0 ? votings : state.votings,
         assets: assets,
         loading: false,
       );
