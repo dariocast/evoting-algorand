@@ -58,7 +58,6 @@ class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<VotingCreationBloc, VotingCreationState>(
-      buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
         return state.status.isSubmissionInProgress
             ? const Center(child: const CircularProgressIndicator())
@@ -96,7 +95,7 @@ class _SubmitButton extends StatelessWidget {
                         ScaffoldMessenger.of(context)
                           ..hideCurrentSnackBar()
                           ..showSnackBar(SnackBar(
-                            duration: Duration(seconds: 1),
+                            duration: Duration(seconds: 2),
                             content: Text(message),
                           ));
                       },
@@ -117,8 +116,8 @@ class _AssetSelection extends StatelessWidget {
           previous.availableAssets != current.availableAssets,
       builder: (context, state) {
         return DropdownButtonFormField(
-          hint: Text('Asset id'),
-          key: const Key('voteCreation_assetIdInput_DropdownField'),
+          hint: Text('Choose one of your assets as voting token'),
+          key: const Key('creationForm_assetInput_dropdownField'),
           onChanged: (Asset? assetId) => context
               .read<VotingCreationBloc>()
               .add(VotingCreationAssetIdChanged(assetId)),
@@ -174,6 +173,7 @@ class _VoteEndDate extends StatelessWidget {
           children: <Widget>[
             Expanded(
               child: ElevatedButton(
+                key: const Key('creationForm_voteEndInput_raisedButton'),
                 onPressed: () => _selectDate(context), // Refer step 3
                 child: Text(
                   'Select voting end date',
@@ -232,6 +232,7 @@ class _VoteBeginDate extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Expanded(
+              key: const Key('creationForm_voteBeginInput_raisedButton'),
               child: ElevatedButton(
                 onPressed: () => _selectDate(context), // Refer step 3
                 child: Text(
@@ -291,6 +292,7 @@ class _RegEndDate extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Expanded(
+              key: const Key('creationForm_regEndInput_raisedButton'),
               child: ElevatedButton(
                 onPressed: () => _selectDate(context), // Refer step 3
                 child: Text(
@@ -350,6 +352,7 @@ class _RegBeginDate extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Expanded(
+              key: const Key('creationForm_regBeginInput_raisedButton'),
               child: ElevatedButton(
                 onPressed: () => _selectDate(context), // Refer step 3
                 child: Text(
@@ -377,7 +380,7 @@ class _TitleInput extends StatelessWidget {
       buildWhen: (previous, current) => previous.title != current.title,
       builder: (context, state) {
         return TextField(
-          key: const Key('voteCreation_titleInput_textField'),
+          key: const Key('creationForm_titleInput_textField'),
           onChanged: (title) => context
               .read<VotingCreationBloc>()
               .add(VotingCreationTitleChanged(title)),
@@ -399,7 +402,7 @@ class _DescriptionInput extends StatelessWidget {
           previous.description != current.description,
       builder: (context, state) {
         return TextField(
-          key: const Key('voteCreation_descriptionInput_textField'),
+          key: const Key('creationForm_descriptionInput_textField'),
           onChanged: (description) => context
               .read<VotingCreationBloc>()
               .add(VotingCreationDescriptionChanged(description)),
@@ -420,7 +423,7 @@ class _OptionOneInput extends StatelessWidget {
       buildWhen: (previous, current) => previous.optionOne != current.optionOne,
       builder: (context, state) {
         return TextField(
-          key: const Key('voteCreation_optionOneInput_textField'),
+          key: const Key('creationForm_optionOneInput_textField'),
           onChanged: (optionOne) => context
               .read<VotingCreationBloc>()
               .add(VotingCreationOptOneChanged(optionOne)),
@@ -441,7 +444,7 @@ class _OptionTwoInput extends StatelessWidget {
       buildWhen: (previous, current) => previous.optionTwo != current.optionTwo,
       builder: (context, state) {
         return TextField(
-          key: const Key('voteCreation_optionTwoInput_textField'),
+          key: const Key('creationForm_optionTwoInput_textField'),
           onChanged: (optionTwo) => context
               .read<VotingCreationBloc>()
               .add(VotingCreationOptTwoChanged(optionTwo)),

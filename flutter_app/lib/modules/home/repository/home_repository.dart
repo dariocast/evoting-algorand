@@ -6,7 +6,7 @@ import 'package:algorand_evoting/utils/services/rest_api_service.dart';
 class HomeRepository {
   Future<List<Voting>> getVotings() async {
     // ! Need this because of indexer per second requests limit...
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 2));
     final response = await RestApiService.getAllVoting();
     if (response.data != null) {
       List<Voting> votings = List<Voting>.from(
