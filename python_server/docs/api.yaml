@@ -143,6 +143,17 @@ paths:
         schema:
           type: integer
           format: int64
+      requestBody:
+        description: Preference to vote for
+        content:
+          application/json:
+            schema:
+                properties:
+                  choice:
+                    type: string
+                  passphrase:
+                    type: string
+        required: true
       responses:
         200:
           description: vote successfully casted on algorand blockchain
@@ -233,6 +244,14 @@ paths:
         schema:
           type: integer
           format: int64
+      requestBody:
+        description: User passphrase
+        content:
+          application/json:
+            schema:
+                properties:
+                  passphrase:
+                    type: string
       responses:
         200:
           description: account successfully opted into app on algorand
