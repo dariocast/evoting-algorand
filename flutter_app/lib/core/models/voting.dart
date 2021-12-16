@@ -3,38 +3,39 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 
 class Voting extends Equatable {
-  final String votingId;
-  final List<String> options;
-  final String title;
+  final String? votingId;
+  final List<String>? options;
+  final String? title;
   final String? description;
-  final DateTime regBegin;
-  final DateTime regEnd;
-  final DateTime voteBegin;
-  final DateTime voteEnd;
-  final int numSubscribers;
-  final String requiredAsset;
-  final String creator;
+  final DateTime? regBegin;
+  final DateTime? regEnd;
+  final DateTime? voteBegin;
+  final DateTime? voteEnd;
+  final int? numSubscribers;
+  final String? requiredAsset;
+  final String? creator;
 
-  Voting(
-      this.votingId,
-      this.options,
-      this.title,
-      this.description,
-      this.regBegin,
-      this.regEnd,
-      this.voteBegin,
-      this.voteEnd,
-      this.numSubscribers,
-      this.requiredAsset,
-      this.creator);
+  Voting({
+    this.votingId,
+    this.options,
+    this.title,
+    this.description,
+    this.regBegin,
+    this.regEnd,
+    this.voteBegin,
+    this.voteEnd,
+    this.numSubscribers,
+    this.requiredAsset,
+    this.creator,
+  });
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       votingId,
       options,
       title,
-      description ?? "",
+      description,
       regBegin,
       regEnd,
       voteBegin,
@@ -51,10 +52,10 @@ class Voting extends Equatable {
       'options': options,
       'title': title,
       'description': description,
-      'regBegin': regBegin.millisecondsSinceEpoch,
-      'regEnd': regEnd.millisecondsSinceEpoch,
-      'voteBegin': voteBegin.millisecondsSinceEpoch,
-      'voteEnd': voteEnd.millisecondsSinceEpoch,
+      'regBegin': regBegin?.millisecondsSinceEpoch,
+      'regEnd': regEnd?.millisecondsSinceEpoch,
+      'voteBegin': voteBegin?.millisecondsSinceEpoch,
+      'voteEnd': voteEnd?.millisecondsSinceEpoch,
       'numSubscribers': numSubscribers,
       'requiredAsset': requiredAsset,
       'creator': creator,
@@ -63,17 +64,17 @@ class Voting extends Equatable {
 
   factory Voting.fromMap(Map<String, dynamic> map) {
     return Voting(
-      map['votingId'],
-      List<String>.from(map['options']),
-      map['title'],
-      map['description'],
-      DateTime.parse(map['regBegin']),
-      DateTime.parse(map['regEnd']),
-      DateTime.parse(map['voteBegin']),
-      DateTime.parse(map['voteEnd']),
-      map['numSubscribers'],
-      map['requiredAsset'],
-      map['creator'],
+      votingId: map['votingId'],
+      options: List<String>.from(map['options']),
+      title: map['title'],
+      description: map['description'],
+      regBegin: DateTime.parse(map['regBegin']),
+      regEnd: DateTime.parse(map['regEnd']),
+      voteBegin: DateTime.parse(map['voteBegin']),
+      voteEnd: DateTime.parse(map['voteEnd']),
+      numSubscribers: map['numSubscribers'],
+      requiredAsset: map['requiredAsset'],
+      creator: map['creator'],
     );
   }
 

@@ -33,7 +33,7 @@ class VotingDetailPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(voting.title),
+          title: Text(voting.title!),
           actions: [
             // isRegistrationTime(state) || isVotingTime(state)
             !isRegistrationTime(state) && !isVotingTime(state)
@@ -106,7 +106,7 @@ class VotingDetailPage extends StatelessWidget {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: state.voting.options
+                children: state.voting.options!
                     .map((element) => Flexible(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -141,7 +141,7 @@ class VotingDetailPage extends StatelessWidget {
         Padding(
           padding: EdgeInsets.all(12),
           child: Text(
-            'Registration from ${DateFormat('yyyy-MM-dd HH:mm').format(state.voting.regBegin)} to ${DateFormat('yyyy-MM-dd HH:mm').format(state.voting.regEnd)}',
+            'Registration from ${DateFormat('yyyy-MM-dd HH:mm').format(state.voting.regBegin!)} to ${DateFormat('yyyy-MM-dd HH:mm').format(state.voting.regEnd!)}',
             style: TextStyle(
               color: isRegistrationOpen ? Colors.green : Colors.red,
               fontSize: fontSizeMedium,
@@ -151,7 +151,7 @@ class VotingDetailPage extends StatelessWidget {
         Padding(
           padding: EdgeInsets.all(12),
           child: Text(
-            'Voting from ${DateFormat('yyyy-MM-dd HH:mm').format(state.voting.voteBegin)} to ${DateFormat('yyyy-MM-dd HH:mm').format(state.voting.voteEnd)}',
+            'Voting from ${DateFormat('yyyy-MM-dd HH:mm').format(state.voting.voteBegin!)} to ${DateFormat('yyyy-MM-dd HH:mm').format(state.voting.voteEnd!)}',
             style: TextStyle(
               color: isVoteOpen ? Colors.green : Colors.red,
               fontSize: fontSizeMedium,
@@ -215,7 +215,7 @@ class VotingDetailPage extends StatelessWidget {
                   context: context,
                   title: 'Vote',
                   message: 'Choose the option you want to vote for.',
-                  actions: votingState.voting.options
+                  actions: votingState.voting.options!
                       .map((e) => AlertDialogAction(key: e, label: e))
                       .toList(),
                 );
@@ -246,22 +246,22 @@ class VotingDetailPage extends StatelessWidget {
   }
 
   bool isVotingTime(VotingDetailState state) {
-    return DateTime.now().isAfter(state.voting.voteBegin) &&
-        DateTime.now().isBefore(state.voting.voteEnd);
+    return DateTime.now().isAfter(state.voting.voteBegin!) &&
+        DateTime.now().isBefore(state.voting.voteEnd!);
   }
 
   bool isRegistrationTime(VotingDetailState state) {
-    return DateTime.now().isAfter(state.voting.regBegin) &&
-        DateTime.now().isBefore(state.voting.regEnd);
+    return DateTime.now().isAfter(state.voting.regBegin!) &&
+        DateTime.now().isBefore(state.voting.regEnd!);
   }
 
   Future<List<VoteTally>> _getGlobalState(Voting voting) async {
     List<VoteTally> counters = List.empty(growable: true);
     RestApiResponse response =
-        await RestApiService.votingGlobalState(voting.votingId);
+        await RestApiService.votingGlobalState(voting.votingId!);
     if (response.status == 200) {
       (response.data as Map).forEach((key, value) {
-        if (voting.options.contains(key)) {
+        if (voting.options!.contains(key)) {
           counters.add(VoteTally(key, value));
         }
       });

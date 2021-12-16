@@ -324,10 +324,10 @@ class _buildList extends StatelessWidget {
         itemCount: state.votings.length,
         itemBuilder: (context, index) {
           final isRegistrationOpen =
-              DateTime.now().isAfter(state.votings[index].regBegin) &&
-                  DateTime.now().isBefore(state.votings[index].regEnd);
+              DateTime.now().isAfter(state.votings[index].regBegin!) &&
+                  DateTime.now().isBefore(state.votings[index].regEnd!);
           return ListTile(
-              title: Text(state.votings[index].title),
+              title: Text(state.votings[index].title!),
               subtitle: Text(state.votings[index].description ?? ''),
               trailing: isRegistrationOpen
                   ? Text(

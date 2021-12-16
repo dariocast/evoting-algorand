@@ -82,7 +82,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _handleDeleteVotingEvent(HomeDeleteVoting event) async* {
     final id = event.voting.votingId;
     try {
-      final response = await _repository.deleteVoting(id, state.passphrase);
+      final response = await _repository.deleteVoting(id!, state.passphrase);
       if (response.status == 200) {
         yield* _handleHomeStartedEvent();
       }

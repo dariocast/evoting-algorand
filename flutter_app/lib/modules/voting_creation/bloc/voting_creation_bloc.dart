@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:algorand_evoting/core/account_repository/account_repository.dart';
+import 'package:algorand_evoting/core/models/voting.dart';
 import 'package:algorand_evoting/modules/voting_creation/models/asset_input.dart';
 import 'package:algorand_evoting/modules/voting_creation/models/models.dart';
 import 'package:algorand_evoting/modules/voting_creation/models/text_input.dart';
@@ -212,6 +213,23 @@ class VotingCreationBloc
           'voteEnd': voteEnd,
           'passphrase': passphrase
         });
+        final votingObj = Voting(
+          requiredAsset: state.assetId.value!.index.toString(),
+          title: state.title.value,
+          description: state.description.value,
+          options: [state.optionOne.value, state.optionTwo.value],
+          regBegin: state.regBegin.value!,
+          regEnd: state.regEnd.value!,
+          voteBegin: state.voteBegin.value!,
+          voteEnd: state.voteEnd.value!,
+          creator: _accountRepo.account!.publicAddress,
+        );
+        try {
+          _localCreation(votingObj);
+        } on Exception catch (e) {
+          print(e);
+          yield state.copyWith(status: FormzStatus.submissionFailure);
+        }
         try {
           RestApiResponse response = await RestApiService.createVoting(voting);
           print(response.message);
@@ -241,4 +259,8 @@ class VotingCreationBloc
   //   super.onChange(change);
   //   print('$change');
   // }
+}
+
+void _localCreation(Voting voting) async {
+  final status = await algorand.status();
 }

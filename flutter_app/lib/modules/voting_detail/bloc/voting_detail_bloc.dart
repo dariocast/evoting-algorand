@@ -26,13 +26,13 @@ class VotingDetailBloc extends Bloc<VotingDetailEvent, VotingDetailState> {
       final searchAsset = await algorand
           .indexer()
           .assets()
-          .whereAssetId(int.parse(state.voting.requiredAsset))
+          .whereAssetId(int.parse(state.voting.requiredAsset!))
           .search();
       final asset = searchAsset.assets.elementAt(0).params.name;
       final searchResponse = await algorand
           .indexer()
           .accounts()
-          .whereApplicationId(int.parse(state.voting.votingId))
+          .whereApplicationId(int.parse(state.voting.votingId!))
           .search();
       final address = accountRepo.account?.address;
       bool optedIn = false;
@@ -42,7 +42,7 @@ class VotingDetailBloc extends Bloc<VotingDetailEvent, VotingDetailState> {
         }
       });
       RestApiResponse localState = await RestApiService.votingLocalState(
-        state.voting.votingId,
+        state.voting.votingId!,
         address!.encodedAddress,
       );
       bool voted = localState.data != null &&
@@ -57,7 +57,7 @@ class VotingDetailBloc extends Bloc<VotingDetailEvent, VotingDetailState> {
       final passphrase = (await accountRepo.account!.seedPhrase).join(' ');
       try {
         RestApiResponse response = await RestApiService.registerForVoting(
-            state.voting.votingId, passphrase);
+            state.voting.votingId!, passphrase);
         print(response.message);
         if (response.status == 200)
           yield state.copyWith(
@@ -80,7 +80,7 @@ class VotingDetailBloc extends Bloc<VotingDetailEvent, VotingDetailState> {
       final passphrase = (await accountRepo.account!.seedPhrase).join(' ');
       try {
         RestApiResponse response = await RestApiService.voteForVoting(
-            state.voting.votingId, passphrase, event.choice);
+            state.voting.votingId!, passphrase, event.choice);
         print(response.message);
         if (response.status == 200)
           yield state.copyWith(
